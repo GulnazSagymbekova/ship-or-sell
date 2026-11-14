@@ -1,0 +1,5 @@
+[
+  { "category": "sofa", "name": "3-seat grey fabric sofa", "brand": null, "material": "fabric", "condition": 3, "widthIn": 84, "depthIn": 36, "heightIn": 34, "volumeCuFt": 65, "weightLb": 140, "aiConfidence": 0.9 },
+  { "category": "coffee_table", "name": "Round walnut coffee table", "brand": null, "material": "walnut veneer", "condition": 4, "widthIn": 36, "depthIn": 36, "heightIn": 17, "volumeCuFt": 14, "weightLb": 35, "aiConfidence": 0.8 },
+  { "category": "lamp", "name": "Black metal floor lamp", "brand": null, "material": "metal", "condition": 4, "widthIn": 12, "depthIn": 12, "heightIn": 65, "volumeCuFt": 6, "weightLb": 10, "aiConfidence": 0.7 }
+]

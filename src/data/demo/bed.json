@@ -1,0 +1,5 @@
+[
+  { "category": "bed_frame", "name": "Queen upholstered bed frame", "brand": null, "material": "fabric over wood", "condition": 3, "widthIn": 64, "depthIn": 86, "heightIn": 48, "volumeCuFt": 40, "weightLb": 110, "aiConfidence": 0.85 },
+  { "category": "mattress", "name": "Queen memory foam mattress", "brand": null, "material": "memory foam", "condition": 3, "widthIn": 60, "depthIn": 80, "heightIn": 12, "volumeCuFt": 37, "weightLb": 75, "aiConfidence": 0.75 },
+  { "category": "rug", "name": "Beige wool area rug 8x10", "brand": null, "material": "wool", "condition": 3, "widthIn": 96, "depthIn": 120, "heightIn": 1, "volumeCuFt": 10, "weightLb": 30, "aiConfidence": 0.6 }
+]

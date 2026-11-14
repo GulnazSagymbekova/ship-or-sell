@@ -2,7 +2,11 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
-/** Обновляет auth-куки и редиректит неавторизованных с /move/* на /login?next=... */
+/**
+ * Обновляет auth-куки. Входа по email нет: на /move/* пользователь без сессии
+ * получает анонимную сессию Supabase (signInAnonymously). RLS, «чужое → 404»,
+ * paywall и лимиты работают так же — по id анонимного пользователя.
+ */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -26,15 +30,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname, search } = request.nextUrl;
-  if (!user && (pathname === "/move" || pathname.startsWith("/move/"))) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.search = `?next=${encodeURIComponent(pathname + search)}`;
-    const redirect = NextResponse.redirect(url);
-    // Сохраняем куки, которые мог выставить Supabase (например, очистка протухшей сессии).
-    response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
-    return redirect;
+  const { pathname } = request.nextUrl;
+  const needsSession = pathname === "/move" || pathname.startsWith("/move/");
+  if (!user && needsSession) {
+    // Куки новой сессии попадут в response через setAll выше.
+    const { error } = await supabase.auth.signInAnonymously();
+    if (error) console.error("[proxy] anonymous sign-in failed", error.code ?? "-", error.message);
   }
 
   return response;
