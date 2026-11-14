@@ -116,6 +116,7 @@ export function ListingsScreen() {
             item={item}
             tossup={tossup}
             moveDate={details.move.moveDate}
+            sellBy={details.plan?.items.find((p) => p.itemId === item.id)?.sellBy ?? null}
             listing={listings[item.id] ?? null}
             error={errors[item.id] ?? null}
             photoUrl={details.photoUrls[item.photoPath]}

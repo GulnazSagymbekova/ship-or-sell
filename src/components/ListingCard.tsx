@@ -30,8 +30,8 @@ function fullText(l: Listing) {
   return `${l.title}\n\n${withSignature(l.description)}\n\nPrice: ${usd.format(l.priceMax)}`;
 }
 
-function PriceDropHint({ listing, moveDate }: { listing: Listing; moveDate: string }) {
-  const plan = priceDropPlan(listing.priceQuick, listing.priceMax, moveDate);
+function PriceDropHint({ listing, moveDate, sellBy }: { listing: Listing; moveDate: string; sellBy?: string | null }) {
+  const plan = priceDropPlan(listing.priceQuick, listing.priceMax, moveDate, sellBy);
   if (!plan) return null;
   return (
     <div className="rounded-lg border border-dashed p-3 text-sm">
@@ -85,6 +85,7 @@ export function ListingCard({
   photoUrl,
   tossup,
   moveDate,
+  sellBy,
   onRetry,
   onPhotoError,
 }: {
@@ -94,6 +95,8 @@ export function ListingCard({
   photoUrl?: string;
   tossup: boolean;
   moveDate: string;
+  /** v2 plan's sellBy for this item, if the server sent a plan. */
+  sellBy?: string | null;
   onRetry: () => void;
   onPhotoError?: () => void;
 }) {
@@ -141,7 +144,7 @@ export function ListingCard({
                 <p className="font-semibold tabular-nums">{usd.format(listing.priceMax)}</p>
               </div>
             </div>
-            <PriceDropHint listing={listing} moveDate={moveDate} />
+            <PriceDropHint listing={listing} moveDate={moveDate} sellBy={sellBy} />
             <p className="text-sm whitespace-pre-line text-foreground/80">{listing.description}</p>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" onClick={() => copy(listing.title)}>

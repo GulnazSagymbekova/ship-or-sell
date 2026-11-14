@@ -17,14 +17,17 @@ export function Paywall({
   moveId,
   lockedCount,
   summary,
+  cash: cashOverride,
 }: {
   moveId: string;
   lockedCount: number;
   summary: MoveSummary | null;
+  /** v2: plan.freedCash when the server sends a plan; otherwise summary.totalSavings. */
+  cash?: number;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const cash = summary?.totalSavings ?? 0;
+  const cash = cashOverride ?? summary?.totalSavings ?? 0;
   const share = priceShare(PASS_PRICE, cash);
 
   const unlock = async () => {
@@ -70,6 +73,9 @@ export function Paywall({
               {lockedCount === 1 ? "" : "s"}
             </li>
           ) : null}
+          <li className="flex gap-2">
+            <Check className="mt-0.5 size-4 shrink-0 text-primary" /> Which items get you a smaller truck, and when to list each
+          </li>
           <li className="flex gap-2">
             <Check className="mt-0.5 size-4 shrink-0 text-primary" /> Ready-to-post Facebook Marketplace listings
           </li>
