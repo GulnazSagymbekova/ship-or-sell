@@ -54,6 +54,8 @@ export async function POST(req: Request) {
     const base = appUrl(req);
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
+      // Всегда в долларах: иначе Stripe по IP показывает местную валюту (на демо в Казахстане — тенге).
+      adaptive_pricing: { enabled: false },
       line_items: [
         {
           quantity: 1,
