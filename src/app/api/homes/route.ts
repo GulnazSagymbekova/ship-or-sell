@@ -32,7 +32,7 @@ export async function GET() {
 
 /**
  * POST /api/homes { moveId } → { homeId }. Опись из ОПЛАЧЕННОГО переезда: копия вещей,
- * которые план везёт (sentimental — всегда), и копия фото в {userId}/homes/{homeId}/.
+ * которые по плану переезда едут с владельцем (sentimental — всегда), и копия фото в {userId}/homes/{homeId}/.
  * Идемпотентно: дом из этого переезда уже есть → тот же homeId.
  */
 export async function POST(req: Request) {
@@ -60,15 +60,14 @@ export async function POST(req: Request) {
     // Владелец проверен выше, itemIds — от пользовательского клиента.
     const estimateList = await loadEstimates(items.map((i) => i.id));
     const estimates = new Map(estimateList.map((e) => [e.itemId, e]));
-    // Что везём — по плану (как в отчёте): вещь с вердиктом SELL план может оставить "ship",
-    // если её продажа не уменьшает грузовик. Без плана — по вердикту.
-    const planActions = new Map(
-      planMove(move, items, estimateList, new Date().toISOString().slice(0, 10)).items.map((p) => [p.itemId, p.action]),
-    );
+    // В опись идёт то, что реально едет в новый дом. Последнее слово — у плана переезда
+    // (как в отчёте): SELL, который не уменьшает грузовик, план везёт — значит, вещь будет дома.
+    const plan = planMove(move, items, estimateList, new Date().toISOString().slice(0, 10));
+    const action = new Map(plan.items.map((p) => [p.itemId, p.action]));
     const keep = items.filter((i) => {
       if (i.sentimental) return true;
-      const action = planActions.get(i.id);
-      return action ? action === "ship" : estimates.get(i.id)?.verdict !== "SELL";
+      const a = action.get(i.id);
+      return a ? a === "ship" : estimates.get(i.id)?.verdict !== "SELL";
     });
 
     const created = await supabase
