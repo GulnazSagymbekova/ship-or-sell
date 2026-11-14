@@ -28,13 +28,21 @@ export function ListingsScreen() {
 
   const paid = details?.move.status === "paid";
 
-  // SELL first, then TOSSUP; sentimental items are never listed.
+  // SELL first, then TOSSUP; sentimental items are never listed. A SELL item the plan
+  // still ships (selling it wouldn't shrink the truck) is shown as "your call", like the report.
   const rows = useMemo(() => {
     if (!details) return [];
     const est = new Map(details.estimates.map((e) => [e.itemId, e]));
-    const pick = (v: "SELL" | "TOSSUP") =>
-      details.items.filter((i) => !i.sentimental && est.get(i.id)?.verdict === v).map((item) => ({ item, tossup: v === "TOSSUP" }));
-    return [...pick("SELL"), ...pick("TOSSUP")];
+    const planned = new Map((details.plan?.items ?? []).map((p) => [p.itemId, p.action]));
+    const listable = details.items.filter((i) => {
+      const v = est.get(i.id)?.verdict;
+      return !i.sentimental && (v === "SELL" || v === "TOSSUP");
+    });
+    const isSell = (i: Item) => est.get(i.id)?.verdict === "SELL" && planned.get(i.id) !== "ship";
+    return [
+      ...listable.filter(isSell).map((item) => ({ item, tossup: false })),
+      ...listable.filter((i) => !isSell(i)).map((item) => ({ item, tossup: true })),
+    ];
   }, [details]);
 
   const generate = useCallback(
