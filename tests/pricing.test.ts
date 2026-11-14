@@ -134,3 +134,19 @@ describe("estimateMove", () => {
     }
   });
 });
+
+describe("category-defaults.json", () => {
+  it("has all 18 categories with positive W/D/H and weight", async () => {
+    const defaults = (await import("@/data/category-defaults.json")).default as Record<
+      string,
+      { widthIn: number; depthIn: number; heightIn: number; weightLb: number }
+    >;
+    const { CATEGORIES } = await import("@/lib/categories");
+    assert.deepEqual(Object.keys(defaults).sort(), [...CATEGORIES].sort());
+    for (const [cat, d] of Object.entries(defaults)) {
+      for (const k of ["widthIn", "depthIn", "heightIn", "weightLb"] as const) {
+        assert.ok(Number.isFinite(d[k]) && d[k] > 0, `${cat}.${k}`);
+      }
+    }
+  });
+});

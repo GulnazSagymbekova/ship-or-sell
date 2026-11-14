@@ -31,11 +31,9 @@ const LIVE = {
   upload: true, // POST /api/upload
   analyze: true, // POST /api/analyze
   items: true, // POST /api/items, PATCH/DELETE /api/items/:id
-  estimate: false, // POST /api/estimate — not in main yet (needs src/lib/pricing)
-  // The real endpoint exists, but needs real estimates + a real "paid" status,
-  // which only appear once /api/estimate and /api/checkout are live.
-  listings: false,
-  checkout: false, // POST /api/checkout — not in main yet
+  estimate: true, // POST /api/estimate
+  listings: true, // POST /api/listings (402 until the move is paid)
+  checkout: true, // POST /api/checkout (Stripe Checkout, $19)
 } as const;
 
 const live = (k: keyof typeof LIVE) => !USE_MOCKS && LIVE[k];
