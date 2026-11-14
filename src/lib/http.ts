@@ -63,10 +63,9 @@ export async function requireUser(): Promise<
 
   const { data, error } = await supabase.auth.signInAnonymously();
   if (error || !data.user) {
-    if (error) logError("requireUser", error);
-    // Код ошибки Supabase (например anonymous_provider_disabled) — без персональных данных.
-    const reason = error ? `${error.code ?? error.name ?? "auth_error"}: ${String(error.message).slice(0, 120)}` : "no_session";
-    return { ok: false, response: apiError("unauthorized", reason) };
+    // Причина — только в лог; клиенту без деталей.
+    logError("requireUser", error ?? { code: "no_session", message: "anonymous sign-in returned no user" });
+    return { ok: false, response: apiError("unauthorized") };
   }
   return { ok: true, supabase, userId: data.user.id };
 }
