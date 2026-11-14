@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { isUuid, logError } from "@/lib/http";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { toSubscriptionStatus } from "@/lib/homeplus";
 
 const ROUTE = "POST /api/stripe/webhook";
 
@@ -35,6 +36,37 @@ export async function POST(req: Request) {
   } catch (err) {
     logError(ROUTE, err);
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
+  }
+
+  // Home+ (подписка): отдельная ветка, ветку Move Pass ниже не трогает.
+  try {
+    if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+      const sub = event.data.object as Stripe.Subscription;
+      await saveSubscription(sub, sub.metadata?.userId, event.type === "customer.subscription.deleted");
+      return NextResponse.json({ received: true });
+    }
+    if (event.type === "invoice.payment_failed") {
+      const invoice = event.data.object as Stripe.Invoice;
+      const ref = invoice.parent?.subscription_details?.subscription;
+      const subId = typeof ref === "string" ? ref : ref?.id;
+      if (subId) {
+        const { error } = await createAdminClient()
+          .from("subscriptions")
+          .update({ status: "past_due", updated_at: new Date().toISOString() })
+          .eq("stripe_subscription_id", subId);
+        if (error) throw error;
+      }
+      return NextResponse.json({ received: true });
+    }
+    if (event.type === "checkout.session.completed" && (event.data.object as Stripe.Checkout.Session).mode === "subscription") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const subId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+      if (subId) await saveSubscription(await getStripe().subscriptions.retrieve(subId), session.metadata?.userId, false);
+      return NextResponse.json({ received: true });
+    }
+  } catch (err) {
+    logError(ROUTE, err);
+    return NextResponse.json({ error: "internal" }, { status: 500 }); // Stripe повторит
   }
 
   if (event.type !== "checkout.session.completed" && event.type !== "checkout.session.async_payment_succeeded") {
@@ -80,4 +112,33 @@ export async function POST(req: Request) {
     // 500 → Stripe повторит доставку позже.
     return NextResponse.json({ error: "internal" }, { status: 500 });
   }
+}
+
+/**
+ * Home+: upsert подписки по user_id (admin-клиент, webhook — единственный писатель).
+ * Stripe 23: current_period_end лежит на subscription items — берём максимум;
+ * без items — конец пробного периода. Идемпотентно: повтор события даёт ту же строку.
+ */
+async function saveSubscription(sub: Stripe.Subscription, userId: string | undefined, deleted: boolean) {
+  if (!userId || !isUuid(userId)) {
+    logError(ROUTE, { code: "no_user_id", message: `subscription ${sub.id} has no valid metadata.userId` });
+    return;
+  }
+  const ends = (sub.items?.data ?? []).map((i) => i.current_period_end).filter((n) => Number.isFinite(n));
+  const periodEnd = ends.length > 0 ? Math.max(...ends) : (sub.trial_end ?? Math.floor(Date.now() / 1000));
+  const customer = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const { error } = await createAdminClient()
+    .from("subscriptions")
+    .upsert(
+      {
+        user_id: userId,
+        stripe_customer_id: customer,
+        stripe_subscription_id: sub.id,
+        status: deleted ? "canceled" : toSubscriptionStatus(sub.status),
+        current_period_end: new Date(periodEnd * 1000).toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+  if (error) throw error;
 }

@@ -106,6 +106,9 @@ const real = {
     request<Home>(`/api/homes/${enc(id)}`, { method: "PATCH", body: json(patch) }),
   deleteHome: (id: string) => request<void>(`/api/homes/${enc(id)}`, { method: "DELETE" }),
   joinHomePlusWaitlist: () => request<void>("/api/home-plus/waitlist", { method: "POST" }),
+  homePlusCheckout: (homeId: string) =>
+    request<{ url: string }>("/api/home-plus/checkout", { method: "POST", body: json({ homeId }) }),
+  billingPortal: (homeId: string) => request<{ url: string }>("/api/billing/portal", { method: "POST", body: json({ homeId }) }),
 };
 
 export const api: {
@@ -149,6 +152,8 @@ export const api: {
   updateHome: (id: string, patch: { name?: string; coverageLimit?: number | null }) => real.updateHome(id, patch),
   deleteHome: (id: string) => real.deleteHome(id),
   joinHomePlusWaitlist: () => real.joinHomePlusWaitlist(),
+  homePlusCheckout: (homeId: string) => real.homePlusCheckout(homeId),
+  billingPortal: (homeId: string) => real.billingPortal(homeId),
 };
 
 export type Api = typeof api;
