@@ -6,6 +6,7 @@ import { loadEstimates, loadListings } from "@/lib/db/estimates";
 import { applyPaywall, applyPlanPaywall } from "@/lib/paywall";
 import { planMove } from "@/lib/pricing/plan";
 import { getSignedPhotoUrls, PHOTO_BUCKET } from "@/lib/storage";
+import { tierFromPayments } from "@/lib/tier";
 import { cityForZip } from "@/lib/zips";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -30,12 +31,21 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
     if (!moveRow) return notFound();
     const move = toMove(moveRow);
 
-    const [itemsRes, photosRes] = await Promise.all([
+    const [itemsRes, photosRes, paymentsRes] = await Promise.all([
       supabase.from("items").select(ITEM_COLUMNS).eq("move_id", id).order("created_at"),
       supabase.from("photos").select("path").eq("move_id", id).order("created_at"),
+      // RLS payments_select: владелец видит свои оплаты. Нужны только суммы — для тарифа.
+      move.status === "paid"
+        ? supabase.from("payments").select("amount_cents").eq("move_id", id)
+        : Promise.resolve({ data: [], error: null }),
     ]);
     if (itemsRes.error) throw itemsRes.error;
     if (photosRes.error) throw photosRes.error;
+    if (paymentsRes.error) throw paymentsRes.error;
+    const tier = tierFromPayments(
+      move.status === "paid",
+      ((paymentsRes.data ?? []) as { amount_cents: number }[]).map((p) => Number(p.amount_cents)),
+    );
 
     const items = (itemsRes.data ?? []).map(toItem);
     const itemIds = items.map((i) => i.id);
@@ -70,6 +80,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
       summary: paywalled?.summary ?? null,
       listings,
       plan,
+      tier,
     };
     return NextResponse.json(body);
   } catch (err) {

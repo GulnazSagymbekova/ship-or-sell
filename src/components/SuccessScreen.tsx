@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { CheckCircle2, Clock, Loader2, RotateCw, Tag } from "lucide-react";
+import { useParams, useSearchParams } from "next/navigation";
+import { CheckCircle2, Clock, Loader2, RotateCw, Sparkles, Tag } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { toApiError } from "@/client/errors";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ type State = "checking" | "paid" | "timeout";
  */
 export function SuccessScreen() {
   const { id: moveId } = useParams<{ id: string }>();
+  // Move Pro (or the upgrade): wait until the server counts it, not just status "paid".
+  const wantPro = useSearchParams().get("plan") === "pro";
   const [state, setState] = useState<State>("checking");
   const [fatal, setFatal] = useState<unknown>(null);
   const [round, setRound] = useState(0);
@@ -34,7 +36,8 @@ export function SuccessScreen() {
       try {
         const d = await api.getMove(moveId);
         if (cancelled) return;
-        if (d.move.status === "paid") return setState("paid");
+        const done = wantPro ? d.tier === "pro" : d.move.status === "paid";
+        if (done) return setState("paid");
       } catch (e) {
         if (cancelled) return;
         if (toApiError(e).kind === "not_found") return setFatal(e);
@@ -48,7 +51,7 @@ export function SuccessScreen() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [moveId, round]);
+  }, [moveId, round, wantPro]);
 
   const refresh = useCallback(() => {
     setState("checking");
@@ -72,8 +75,19 @@ export function SuccessScreen() {
           <Confetti />
           <CheckCircle2 className="size-14 text-sell" aria-hidden />
           <h1 className="text-2xl font-semibold">Payment received</h1>
-          <p className="text-muted-foreground">Your full report and Marketplace listings are unlocked.</p>
-          <Button asChild size="lg" className="w-full">
+          <p className="text-muted-foreground">
+            {wantPro
+              ? "Move Pro is on: budget by date, mover check and home inventory, plus your full report and listings."
+              : "Your full report and Marketplace listings are unlocked."}
+          </p>
+          {wantPro ? (
+            <Button asChild size="lg" className="w-full">
+              <Link href={`/move/${moveId}/pro`}>
+                <Sparkles /> Open Move Pro
+              </Link>
+            </Button>
+          ) : null}
+          <Button asChild size="lg" variant={wantPro ? "outline" : "default"} className="w-full">
             <Link href={`/move/${moveId}/listings`}>
               <Tag /> Get my listings
             </Link>
