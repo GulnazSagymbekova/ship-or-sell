@@ -1,10 +1,13 @@
-import { Heart, Lock } from "lucide-react";
-import type { Estimate, Item } from "@/types";
+import { CalendarClock, Heart, Lock } from "lucide-react";
+import type { Estimate, Item, PlanItem } from "@/types";
 import { CATEGORY_LABEL } from "@/client/labels";
 import { explain } from "@/client/explain";
 import { cn, usd } from "@/client/utils";
 import { Badge } from "@/components/ui/badge";
 import { DecisionBadge } from "@/components/DecisionBadge";
+
+const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+const shortDate = (iso: string) => dateFmt.format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 
 function Figure({ label, value }: { label: string; value: string }) {
   return (
@@ -21,6 +24,7 @@ export function EstimateCard({
   photoUrl,
   toCity,
   locked,
+  planItem,
   onPhotoError,
 }: {
   item: Item;
@@ -28,9 +32,18 @@ export function EstimateCard({
   photoUrl?: string;
   toCity: string | null;
   locked: boolean;
+  /** v2 plan entry for this item (absent for locked items or when the server has no plan yet). */
+  planItem?: PlanItem;
   onPhotoError?: () => void;
 }) {
-  const verdict = item.sentimental ? "SHIP" : estimate.verdict;
+  // The plan has the final say: a SELL that doesn't shrink the vehicle and loses money ships.
+  const planned =
+    planItem?.action === "ship" && estimate.verdict === "SELL"
+      ? "SHIP"
+      : planItem && planItem.action !== "ship"
+        ? "SELL"
+        : estimate.verdict;
+  const verdict = item.sentimental ? "SHIP" : planned;
   return (
     <article className="rounded-xl border bg-card p-3 shadow-sm">
       <div className="flex items-start gap-3">
@@ -73,8 +86,20 @@ export function EstimateCard({
         ) : null}
       </div>
 
+      {planItem && planItem.sellBy && (planItem.action === "sell" || planItem.action === "sell_buy_later") ? (
+        <p className="mt-2 flex items-center gap-1.5 rounded-lg bg-sell/10 px-2.5 py-1.5 text-sm font-medium">
+          <CalendarClock className="size-4 shrink-0" />
+          List by {shortDate(planItem.sellBy)} · ~{Math.round(planItem.sellChance * 100)}% chance · expect{" "}
+          {usd.format(planItem.expectedResale)}
+        </p>
+      ) : planItem?.action === "donate" ? (
+        <p className="mt-2 rounded-lg bg-muted px-2.5 py-1.5 text-sm font-medium">Not worth listing — donate it.</p>
+      ) : null}
+
       <p className={cn("mt-2 text-sm", locked ? "text-muted-foreground italic" : "text-foreground/80")}>
-        {explain(item, estimate, toCity, locked)}
+        {planItem?.action === "ship" && estimate.verdict === "SELL" && !item.sentimental
+          ? "Selling it wouldn't make your truck smaller, and replacing it costs more than it sells for — ship it."
+          : explain(item, estimate, toCity, locked)}
       </p>
     </article>
   );
