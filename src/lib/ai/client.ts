@@ -45,20 +45,26 @@ export async function callTool(params: {
     res = await anthropic.messages.create({
       model: AI_MODEL,
       max_tokens: params.maxTokens,
-      system: params.system,
+      // claude-sonnet-5-5 не поддерживает tool_choice "tool"/"any" (400 invalid_request_error),
+      // поэтому auto + явная инструкция. Нет tool_use в ответе → AiInvalidOutputError → повтор.
+      system: `${params.system}\n\nAlways respond by calling the ${params.tool.name} tool exactly once. Do not reply with plain text.`,
       tools: [params.tool as Anthropic.Tool],
-      tool_choice: { type: "tool", name: params.tool.name },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: params.content }],
     });
   } catch (err) {
+    // Любая ошибка API (сеть, таймаут, 429, 5xx, а также 4xx) → AiUnavailableError:
+    // роут решит — DEMO_FALLBACK или 503. Статус и текст попадут в лог для отладки.
     const e = err as { status?: number; name?: string; message?: string };
-    // 4xx (кроме 408/429) — ошибка запроса с нашей стороны, а не недоступность.
-    if (typeof e.status === "number" && e.status >= 400 && e.status < 500 && e.status !== 408 && e.status !== 429) {
-      throw err;
-    }
-    throw new AiUnavailableError(`${e.name ?? "Error"}: ${e.status ?? ""} ${String(e.message ?? "").slice(0, 120)}`);
+    throw new AiUnavailableError(`${e.name ?? "Error"}: ${e.status ?? ""} ${String(e.message ?? "").slice(0, 200)}`);
   }
   const block = res.content.find((b) => b.type === "tool_use");
   if (!block || block.type !== "tool_use") throw new AiInvalidOutputError("no tool_use block");
   return block.input;
+}
+
+/** Только в `next dev`: текст ошибки AI в ответе API для отладки. На проде — пусто. */
+export function devDetail(err: unknown): string {
+  if (process.env.NODE_ENV !== "development") return "";
+  return ` [dev: ${String((err as Error)?.message ?? err).slice(0, 300)}]`;
 }

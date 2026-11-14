@@ -5,7 +5,7 @@ import { apiError, isUuid, logError, notFound, parseJson, requireUser } from "@/
 import { getOwnedItem, getOwnedMove } from "@/lib/db/access";
 import { loadEstimates, loadListings } from "@/lib/db/estimates";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AiInvalidOutputError, AiUnavailableError, demoFallbackEnabled } from "@/lib/ai/client";
+import { AiInvalidOutputError, AiUnavailableError, demoFallbackEnabled, devDetail } from "@/lib/ai/client";
 import { generateListing, templateListing } from "@/lib/ai/listing";
 import { checkAndRecord, hourlyMessage } from "@/lib/ratelimit";
 import { cityForZip } from "@/lib/zips";
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         if (!(err instanceof AiUnavailableError || err instanceof AiInvalidOutputError)) throw err;
         logError(ROUTE, err);
         if (!demoFallbackEnabled()) {
-          return apiError("unavailable", "AI is temporarily unavailable, try again in a minute");
+          return apiError("unavailable", `AI is temporarily unavailable, try again in a minute${devDetail(err)}`);
         }
         listing = templateListing(item, estimate, fromCity, move.moveDate);
       }

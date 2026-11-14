@@ -4,7 +4,7 @@ import type { MoveStatus } from "@/types";
 import { apiError, isUuid, logError, notFound, parseJson, requireUser } from "@/lib/http";
 import { countItems, getOwnedMove, MAX_ITEMS_PER_MOVE, photoBelongsToMove } from "@/lib/db/access";
 import { ITEM_COLUMNS, itemToRow, toItem } from "@/lib/db/mappers";
-import { AiInvalidOutputError, AiUnavailableError, demoFallbackEnabled } from "@/lib/ai/client";
+import { AiInvalidOutputError, AiUnavailableError, demoFallbackEnabled, devDetail } from "@/lib/ai/client";
 import { demoItemsFor } from "@/lib/ai/demo";
 import { analyzePhoto, type DetectedItem } from "@/lib/ai/vision";
 import { checkAndRecord, hourlyMessage } from "@/lib/ratelimit";
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
           logError(ROUTE, err);
           if (!demoFallbackEnabled()) {
             return err instanceof AiUnavailableError
-              ? apiError("unavailable", "AI is temporarily unavailable, try again in a minute")
+              ? apiError("unavailable", `AI is temporarily unavailable, try again in a minute${devDetail(err)}`)
               : apiError("internal", "Could not read this photo, try another one");
           }
           detected = demoItemsFor(photoPath);
