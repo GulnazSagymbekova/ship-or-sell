@@ -98,7 +98,7 @@ export function EstimateCard({
 
       <p className={cn("mt-2 text-sm", locked ? "text-muted-foreground italic" : "text-foreground/80")}>
         {planItem?.action === "ship" && estimate.verdict === "SELL" && !item.sentimental
-          ? "Selling it wouldn't make your truck smaller, and replacing it costs more than it sells for — ship it."
+          ? "Selling it wouldn't get you a smaller truck, so the truck costs the same either way — ship it and skip buying a replacement."
           : explain(item, estimate, toCity, locked)}
       </p>
     </article>
