@@ -13,11 +13,11 @@ import { MOVE_TYPES } from "@/client/labels";
 import { cn } from "@/client/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
+import { PlaceInput } from "@/components/PlaceInput";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const zip = z.string().regex(/^\d{5}$/, "Enter a 5-digit ZIP");
+const zip = z.string().regex(/^\d{5}$/, "Pick a city from the list or enter a 5-digit ZIP");
 
 const schema = z
   .object({
@@ -72,32 +72,28 @@ export function MoveForm() {
     }
   };
 
-  const zipProps = {
-    inputMode: "numeric" as const,
-    autoComplete: "postal-code",
-    maxLength: 5,
-    placeholder: "e.g. 10001",
-  };
-
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="fromZip">From ZIP</Label>
-          <Input id="fromZip" {...zipProps} aria-invalid={!!errors.fromZip} {...form.register("fromZip")} />
-          <FieldError message={errors.fromZip?.message} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="toZip">To ZIP</Label>
-          <Input
-            id="toZip"
-            {...zipProps}
-            placeholder="e.g. 78701"
-            aria-invalid={!!errors.toZip}
-            {...form.register("toZip")}
-          />
-          <FieldError message={errors.toZip?.message} />
-        </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(["fromZip", "toZip"] as const).map((name) => (
+          <div key={name} className="space-y-2">
+            <Label htmlFor={name}>{name === "fromZip" ? "From" : "To"}</Label>
+            <Controller
+              control={form.control}
+              name={name}
+              render={({ field }) => (
+                <PlaceInput
+                  id={name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder={name === "fromZip" ? "New York, NY" : "Austin, TX"}
+                  invalid={!!errors[name]}
+                />
+              )}
+            />
+            <FieldError message={errors[name]?.message} />
+          </div>
+        ))}
       </div>
 
       <div className="space-y-2">
