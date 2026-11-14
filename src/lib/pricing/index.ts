@@ -14,7 +14,7 @@ import defaultsJson from "@/data/category-defaults.json";
  *  - retail: цена новой похожей вещи = база категории × бренд × материал × размер.
  *  - resale: retail × доля перепродажи (материал, бренд, категория) × состояние.
  *  - replaceCost: min(купить б/у похожую там же + забрать её, купить новую).
- *  - verdict / savings — по правилам из docs/PROMPT_C.md (согласовано с B, см. paywall.ts).
+ *  - verdict / savings — по правилам в decide() ниже (описаны в README.md, раздел 5).
  */
 
 // ---------- Константы ----------

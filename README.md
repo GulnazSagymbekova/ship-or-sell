@@ -1,36 +1,262 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ship-or-Sell
 
-## Getting Started
+**Что везти при переезде в другой штат, а что продать и купить заново: решение за пару минут по фото.**
 
-First, run the development server:
+Прод: **https://ship-or-sell.vercel.app** · Stripe в test mode · B2C, веб (mobile-first), пользователи — взрослые в США.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 1. Боль, которую мы закрываем
+
+- Каждый год **больше 7 млн американцев** переезжают в другой штат. Переезд двухкомнатной квартиры на ~1000 миль стоит **$2 000–5 000**.
+- Самый тяжёлый вопрос — не упаковка, а **«что везти, а что продать и купить там»**: 47% называют его главным стрессом переезда.
+- Сегодня его решают на глаз:
+  - калькуляторы муверов дают средние цены и не видят, что у тебя: массив дуба или ДСП;
+  - на форумах годами спорят «везти или купить там», общего ответа нет;
+  - на маркетплейсе продать можно, но никто не скажет, **стоит ли**.
+- Ошибка дорогая в обе стороны. Везёшь старый диван за $400, а он стоит $150. Продаёшь хороший комод за $80, а на новом месте платишь $600 за замену.
+- И ещё нужно **время и наличные**: продать до переезда, заплатить перевозчику в день переезда, купить кровать в первую неделю.
+
+**Ship-or-Sell** смотрит на **твои** вещи по фото и считает переезд **целиком**: сколько стоит перевезти каждую вещь, сколько выручишь при продаже, сколько стоит замена на новом месте. Итог — вердикт по каждой вещи, план переезда (какой грузовик или контейнер, сколько наличных освобождается) и готовые объявления для Facebook Marketplace.
+
+---
+
+## 2. Как пользоваться
+
+1. Открой **https://ship-or-sell.vercel.app** → **Get started**. Регистрация не нужна: вход анонимный, без email.
+2. **Анкета переезда** (`/move/new`): откуда и куда (город или ZIP), дата, тип переезда:
+   - **DIY truck**: арендуешь грузовик сам;
+   - **Container**: контейнер типа PODS;
+   - **Full service**: межштатная мувинговая компания.
+3. **Фото** (`/move/:id`): загрузи до 20 фото комнат. AI (Claude) распознаёт каждую вещь: категорию, бренд, материал, состояние, размеры, вес. EXIF и GPS из фото удаляются при загрузке.
+4. **Проверка**: поправь любую вещь, удали лишнюю, добавь пропущенную вручную. Отметь **sentimental** у вещей, которые точно повезёшь: им всегда ставится `SHIP`.
+5. **Calculate** → **отчёт** (`/move/:id/report`):
+   - вердикт по каждой вещи: `SHIP` / `SELL` / `TOSSUP`, с объяснением («Shipping costs more than buying a similar one in Austin»);
+   - **план переезда**: какой нужен грузовик или контейнер, сколько наличных освобождается и когда (до переезда, в день переезда, в первую неделю, в первый месяц).
+6. Бесплатно видны вердикты всех вещей, итог и полные цифры **3 вещей** с наибольшей экономией. Остальное открывает **Move Pass** (см. ниже).
+7. После оплаты: все цифры, полный план с советами и **объявления для Marketplace** (`/move/:id/listings`) с быстрой и максимальной ценой, копируются в один клик.
+8. Из оплаченного отчёта можно бесплатно **сохранить опись дома** (Save home inventory → `/home/:id`) и подключить **Home+**.
+
+---
+
+## 3. Тарифы: что за что платит пользователь
+
+| Тариф | Цена | Что даёт |
+|---|---|---|
+| **Free** | $0 | распознавание фото, редактирование, вердикты **всех** вещей, итоговая сводка (сколько освобождается, какой грузовик), полные цифры 3 вещей |
+| **Move Pass** | **$29** разово за переезд | цифры по всем вещам, полный план переезда с советами («Продай диван и стол — хватит грузовика 15 ft, экономия $420»), объявления для Facebook Marketplace, сохранение описи дома |
+| **Move Pro** | **$79** разово за переезд (апгрейд с Pass: $50) | всё из Pass + бюджет переезда по датам (сколько отложить, чтобы не уйти в кредитку), проверка мувера (USDOT и федеральные красные флаги), опись с ценами замены для страховки |
+| **Home+** | **$4.99/мес**, первые **30 дней бесплатно** | постоянная опись дома: стоимость всех вещей, проверка покрытия страховки («вещей на $18 400, полис покрывает $15 000»), экспорт CSV для страховой, отмена в любой момент через **Manage subscription** |
+
+Почему так:
+- **Pass и Pro** оплачиваются за событие: переезд бывает раз в несколько лет, подписка на него не нужна.
+- **Home+** — причина вернуться после переезда: у пользователя уже есть опись вещей с фото и ценами, а страховщики (NAIC) советуют такую опись держать.
+- Если план не освобождает денег, Paywall прямо пишет: «you probably don't need the paid plan». Мы не продаём то, что не окупится.
+
+Скрытие цифр сделано **на сервере**: у закрытых вещей API отдаёт нули, поэтому в DevTools их не увидеть. Клиент только размывает такие карточки.
+
+---
+
+## 4. Тестовая оплата (Stripe test mode)
+
+Настоящие деньги не списываются. На странице Stripe Checkout введи:
+
+| Поле | Значение |
+|---|---|
+| Номер карты | `4242 4242 4242 4242` |
+| Срок | любая будущая дата, например `12/34` |
+| CVC | любые 3 цифры, например `123` |
+| Имя, email, ZIP | любые |
+
+**Move Pass или Move Pro**
+1. Создай переезд, загрузи фото, нажми **Calculate**.
+2. В отчёте нажми **Unlock full report & listings — $29** (Move Pass) или **Get Move Pro** ($79).
+3. Оплати тестовой картой → редирект на `/move/:id/success` → отчёт открыт полностью.
+4. Оплату подтверждает **webhook** Stripe (`checkout.session.completed`), а не редирект: статус переезда меняется на `paid` только после проверки подписи события.
+
+**Home+ (подписка)**
+1. В оплаченном отчёте нажми **Save home inventory** → откроется опись `/home/:id`.
+2. **Start 30-day free trial** → Stripe Checkout в режиме подписки → тестовая карта.
+3. Статус станет **Free trial active**. Списание $4.99 произойдёт через 30 дней.
+4. **Manage subscription** открывает Stripe Billing Portal: отменить подписку или поменять карту.
+
+Другие тестовые карты: `4000 0000 0000 9995` — отказ (нет средств), `4000 0025 0000 3155` — требует 3-D Secure.
+
+---
+
+## 5. Финансовая логика
+
+### 5.1. Оценка каждой вещи — `src/lib/pricing/index.ts`
+
+`estimateMove(move, items)` — чистая функция без сети и БД, одна оценка на вещь. Все суммы — целые доллары.
+
+| Величина | Как считаем |
+|---|---|
+| **shipCost** — перевезти | доля вещи в стоимости перевозки. Full service — по «billable weight» `max(вес, объём × 7 фунтов/куб. фут)`, как считают межштатные муверы. Container и DIY truck — по объёму. Ставка растёт с расстоянием (haversine между ZIP × 1.2) + упаковка |
+| **retail** — новая похожая | база категории × бренд × материал × размер |
+| **resaleLow / resaleHigh** — продать | retail × доля перепродажи (материал, бренд, категория; не выше 60%) × состояние. Low — быстрая продажа, High — максимальная |
+| **replaceCost** — купить замену | дешевле из двух: б/у похожая + забрать её, или новая. Матрасы — только новые |
+
+Решение (`decide()`):
+
+```
+продать и купить заново = replaceCost − (resaleLow + resaleHigh) / 2
+diff      = shipCost − (продать и купить заново)
+threshold = max($25, 10% от shipCost)
+
+diff >  threshold → SELL    (везти дороже, чем продать и купить там)
+diff < −threshold → SHIP
+иначе             → TOSSUP  (разница меньше порога, решай сам)
+savings = |diff|
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `sentimental = true` → вердикт всегда `SHIP`. Цифры считаются как обычно, чтобы было видно цену решения, но в итоговую экономию они не входят.
+- `confidence` (0..1) — уверенность AI в распознавании × насколько вердикт далёк от порога.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5.2. План переезда — `src/lib/pricing/plan.ts`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Перевозка оплачивается **ступенями**, а не за каждую вещь: грузовик 10/15/20/26 ft, контейнер ~800 куб. футов, минимальный заказ мувера 2000 фунтов. Поэтому продажа вещи реально экономит, только если переезд **спускается на ступень ниже**. `planMove()` подбирает набор вещей на продажу так, чтобы освободить больше всего наличных, с учётом:
 
-## Learn More
+- шанса продать вещь за 2 недели на Marketplace (по категории и сроку до переезда);
+- графика денег: **+** продажи до переезда → **−** оплата перевозки → **−** замена нужного сразу (кровать, матрас) в первую неделю → **−** остальная замена в первый месяц;
+- **freedCash** = итог по плану − итог «везти всё». Это главная цифра на экране.
 
-To learn more about Next.js, take a look at the following resources:
+Инвариант (проверяется тестами): план **никогда не хуже**, чем «везти всё», `freedCash ≥ 0`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 5.3. Откуда цифры
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Ставки перевозки, розничные цены по категориям, доли перепродажи — по открытым прайсам 2025–2026 (U-Haul, PODS, межштатные муверы, IKEA, Wayfair, West Elm, Facebook Marketplace). Где ставка — наше допущение, это помечено в коде `[допущение]`. Справочник ZIP и типичные размеры: [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
 
-## Deploy on Vercel
+### 5.4. Юнит-экономика (коротко)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| | |
+|---|---|
+| Себестоимость AI на переезд | ~$0.15 (≈1.5¢ за фото × ~10 фото, объявление ≈0.4¢) |
+| Валовая маржа | ~90% (комиссия Stripe + AI + хостинг) |
+| Средний чек (Pass/Pro) | ~$44 |
+| LTV пользователя | ~$24 (Pass/Pro + партнёрские комиссии магазинов + Home+) |
+| CAC (виральность, SEO, блогеры) | $4–8 → **LTV/CAC 3–6** |
+| ARR на 5-й год | базовый ~$21M, агрессивный ~$101M |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Полный расчёт с допущениями и источниками: [docs/metrics.md](docs/metrics.md). Сценарий питча и ответы жюри: [docs/PITCH_SCRIPT.md](docs/PITCH_SCRIPT.md).
+
+---
+
+## 6. Бэкенд
+
+### Стек
+
+- **Next.js 16** (App Router, route handlers) + TypeScript + Tailwind + shadcn/ui, деплой на **Vercel**
+- **Supabase**: Postgres, анонимный Auth, приватный Storage для фото
+- **Drizzle ORM** (схема: `src/lib/db/schema.ts`, миграции: `supabase/migrations/`)
+- **Claude API** (`claude-sonnet-5-5`): распознавание фото и тексты объявлений
+- **Stripe**: Checkout (разовые оплаты и подписка), Webhook, Billing Portal
+
+### Как идёт запрос
+
+```
+браузер ──► /api/upload ──► sharp: убрать EXIF/GPS ──► private bucket (Supabase Storage)
+        ──► /api/analyze ──► Claude Vision (только изображение) ──► items
+        ──► /api/estimate ──► estimateMove + planMove ──► paywall (обнуление на сервере) ──► отчёт
+        ──► /api/checkout ──► Stripe Checkout ──► /api/stripe/webhook ──► moves.status = paid
+        ──► /api/listings ──► Claude (атрибуты вещи + цены + город) ──► объявление (кэшируется)
+```
+
+### API
+
+| Метод | Путь | Что делает |
+|---|---|---|
+| GET / POST | `/api/moves` | список переездов пользователя / создать переезд |
+| GET / DELETE | `/api/moves/:id` | отчёт целиком (`MoveDetails`) / удалить переезд, вещи и фото |
+| POST | `/api/upload` | загрузить 1 фото → `{ photoPath }` |
+| POST | `/api/analyze` | распознать вещи на фото → `Item[]` |
+| POST | `/api/items` | добавить вещь вручную (размеры — типичные для категории) |
+| PATCH / DELETE | `/api/items/:id` | изменить / удалить вещь |
+| POST | `/api/estimate` | оценки, сводка и план переезда (`EstimateResult`) |
+| POST | `/api/listings` | объявление для Marketplace (402 без оплаты) |
+| POST | `/api/checkout` | Stripe Checkout для Move Pass / Move Pro → `{ url }` |
+| POST | `/api/stripe/webhook` | оплаты и жизненный цикл подписки Home+ |
+| GET / POST | `/api/homes`, `/api/homes/:id` | опись дома из оплаченного переезда, лимит покрытия |
+| GET | `/api/homes/:id/export` | CSV для страховой (только с Home+) |
+| POST | `/api/home-plus/checkout` | подписка Home+ (30 дней бесплатно, потом $4.99/мес) |
+| POST | `/api/billing/portal` | Stripe Billing Portal (Manage subscription) |
+| GET | `/api/places?q=` | поиск города или ZIP для анкеты |
+
+Общие правила: чужой или несуществующий id → `404`, ошибка валидации → `400`, превышен лимит → `429`, нужна оплата → `402`. Контракт данных — `src/types.ts`.
+
+### База данных
+
+`moves`, `photos`, `items`, `estimates`, `listings`, `payments`, `ai_calls`, `homes`, `home_items`, `subscriptions`, `home_plus_waitlist`. **RLS включён на всех таблицах**: пользователь видит только свои строки.
+
+### Приватность и безопасность
+
+- Фото — в приватном bucket, отдаются только по signed URL на 10 минут; EXIF и GPS удаляются при загрузке.
+- В Claude уходит только изображение (распознавание) или атрибуты вещи, цены, город и дата (объявление). **Никогда**: email, имя, userId, ZIP, адрес.
+- Секретные ключи (`SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) — только на сервере.
+- Webhook проверяет подпись Stripe; статус оплаты пишет только он.
+
+### Лимиты (защита бюджета на AI)
+
+- до 20 фото и 60 вещей на переезд;
+- 30 распознаваний и 20 объявлений на пользователя в час;
+- `AI_DAILY_LIMIT` (по умолчанию 500 вызовов Claude в сутки) на весь сервис.
+
+Счётчики хранятся в Postgres (`ai_calls`), а не в памяти: на Vercel каждый запрос может попасть в новый инстанс.
+
+**Демо-режим** `DEMO_FALLBACK=true`: если Claude недоступен (нет ключа, сбой, исчерпан лимит), `/api/analyze` и `/api/listings` отдают заготовленные ответы из `src/data/demo/`. Пока Claude отвечает, ответы настоящие.
+
+---
+
+## 7. Запуск локально
+
+```bash
+npm install
+cp .env.example .env.local   # заполнить ключи (см. ниже)
+npm run dev                  # http://localhost:3000
+```
+
+| Переменная | Где взять |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API |
+| `DATABASE_URL` | Supabase → Connect → Transaction pooler (порт 6543) |
+| `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys |
+| `STRIPE_SECRET_KEY` | Stripe Dashboard (test mode) → Developers → API keys |
+| `STRIPE_WEBHOOK_SECRET` | `stripe listen --forward-to localhost:3000/api/stripe/webhook` |
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` |
+
+Миграции из `supabase/migrations/` применяются в Supabase SQL Editor по порядку. В Supabase нужно включить **Anonymous sign-ins**.
+
+Без бэкенда фронтенд работает на моках: `NEXT_PUBLIC_USE_MOCKS=true`.
+
+### Проверки
+
+```bash
+npm test        # юнит-тесты: pricing, план переезда, тарифы, Home+, ZIP, поиск городов
+npm run lint
+npm run build
+```
+
+---
+
+## 8. Структура репозитория
+
+```
+src/
+  app/            страницы (App Router) и API-роуты (app/api/*)
+  components/     экраны и UI (shadcn/ui в components/ui)
+  lib/ai/         Claude: распознавание, объявления, промпты, демо-режим
+  lib/pricing/    финансовая логика: index.ts (оценка вещи), plan.ts (план переезда), home.ts (опись)
+  lib/db/         Drizzle-схема, доступ, маппинг
+  lib/            paywall, Stripe, лимиты, Supabase-клиенты, Storage
+  data/           zips.json, category-defaults.json, демо-ответы
+  types.ts        контракт данных между фронтендом и бэкендом
+supabase/migrations/   SQL-схема, RLS, Storage
+tests/                 юнит-тесты (node:test + tsx)
+docs/                  метрики, источники данных, сценарий питча
+```
+
+## Команда
+
+- **A** — фронтенд и демо
+- **B** — AI и бэкенд
+- **C** — финансовая логика, данные, Stripe, питч
