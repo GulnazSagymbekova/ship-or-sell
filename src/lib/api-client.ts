@@ -5,6 +5,7 @@
 // NEXT_PUBLIC_USE_MOCKS=true mocks everything (no Supabase env needed).
 
 import type { Category, EstimateResult, Item, Listing, Move, MoveDetails, MoveType } from "@/types";
+import type { Place } from "@/lib/places";
 import { USE_MOCKS } from "@/client/config";
 import { ApiError, kindFromStatus } from "@/client/errors";
 import { forgetMove, mockApi, overlayDetails } from "@/mock/mocks";
@@ -94,6 +95,7 @@ const real = {
   estimate: (moveId: string) => request<EstimateResult>("/api/estimate", { method: "POST", body: json({ moveId }) }),
   createListing: (itemId: string) => request<Listing>("/api/listings", { method: "POST", body: json({ itemId }) }),
   checkout: (moveId: string) => request<{ url: string }>("/api/checkout", { method: "POST", body: json({ moveId }) }),
+  searchPlaces: (q: string) => request<Place[]>(`/api/places?q=${enc(q)}`),
 };
 
 export const api: {
@@ -128,6 +130,8 @@ export const api: {
   },
   createListing: (itemId: string) => (live("listings") ? real.createListing(itemId) : mockApi.createListing(itemId)),
   checkout: (moveId: string) => (live("checkout") ? real.checkout(moveId) : mockApi.checkout(moveId)),
+  // Публичный справочник городов — всегда настоящий, и в mock-режиме тоже.
+  searchPlaces: (q: string) => real.searchPlaces(q),
 };
 
 export type Api = typeof api;
