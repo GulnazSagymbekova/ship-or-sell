@@ -6,6 +6,7 @@
 
 import type { Category, CheckoutPlan, EstimateResult, Item, Listing, Move, MoveDetails, MoveType } from "@/types";
 import type { Place } from "@/lib/places";
+import type { Home, HomeDetails } from "@/home-types";
 import { USE_MOCKS } from "@/client/config";
 import { ApiError, kindFromStatus } from "@/client/errors";
 import { forgetMove, mockApi, overlayDetails } from "@/mock/mocks";
@@ -97,6 +98,14 @@ const real = {
   checkout: (moveId: string, plan: CheckoutPlan = "pass") =>
     request<{ url: string }>("/api/checkout", { method: "POST", body: json({ moveId, plan }) }),
   searchPlaces: (q: string) => request<Place[]>(`/api/places?q=${enc(q)}`),
+  // Home+ (опись дома). Без моков — сразу настоящий бэкенд.
+  createHome: (moveId: string) => request<{ homeId: string }>("/api/homes", { method: "POST", body: json({ moveId }) }),
+  listHomes: () => request<Home[]>("/api/homes"),
+  getHome: (id: string) => request<HomeDetails>(`/api/homes/${enc(id)}`),
+  updateHome: (id: string, patch: { name?: string; coverageLimit?: number | null }) =>
+    request<Home>(`/api/homes/${enc(id)}`, { method: "PATCH", body: json(patch) }),
+  deleteHome: (id: string) => request<void>(`/api/homes/${enc(id)}`, { method: "DELETE" }),
+  joinHomePlusWaitlist: () => request<void>("/api/home-plus/waitlist", { method: "POST" }),
 };
 
 export const api: {
@@ -134,6 +143,12 @@ export const api: {
     live("checkout") ? real.checkout(moveId, plan) : mockApi.checkout(moveId),
   // Публичный справочник городов — всегда настоящий, и в mock-режиме тоже.
   searchPlaces: (q: string) => real.searchPlaces(q),
+  createHome: (moveId: string) => real.createHome(moveId),
+  listHomes: () => real.listHomes(),
+  getHome: (id: string) => real.getHome(id),
+  updateHome: (id: string, patch: { name?: string; coverageLimit?: number | null }) => real.updateHome(id, patch),
+  deleteHome: (id: string) => real.deleteHome(id),
+  joinHomePlusWaitlist: () => real.joinHomePlusWaitlist(),
 };
 
 export type Api = typeof api;

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
 /**
- * Обновляет auth-куки. Входа по email нет: на /move/* пользователь без сессии
+ * Обновляет auth-куки. Входа по email нет: на /move/* и /home/* (Home+) пользователь без сессии
  * получает анонимную сессию Supabase (signInAnonymously). RLS, «чужое → 404»,
  * paywall и лимиты работают так же — по id анонимного пользователя.
  */
@@ -31,7 +31,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const needsSession = pathname === "/move" || pathname.startsWith("/move/");
+  const needsSession =
+    pathname === "/move" || pathname.startsWith("/move/") || pathname === "/home" || pathname.startsWith("/home/");
   if (!user && needsSession) {
     // Куки новой сессии попадут в response через setAll выше.
     const { error } = await supabase.auth.signInAnonymously();

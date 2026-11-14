@@ -16,6 +16,7 @@ import { EstimateCard } from "@/components/EstimateCard";
 import { LoadingState } from "@/components/LoadingState";
 import { Paywall, UpgradeToPro } from "@/components/Paywall";
 import { PlanCard, SmartMoveCard } from "@/components/PlanCard";
+import { SaveInventoryCard } from "@/components/SaveInventoryCard";
 import { SummaryCard } from "@/components/SummaryCard";
 
 export function ReportScreen() {
@@ -129,6 +130,8 @@ export function ReportScreen() {
       ) : null}
 
       {paid && details.tier === "pass" ? <UpgradeToPro moveId={moveId} /> : null}
+
+      {paid ? <SaveInventoryCard moveId={moveId} /> : null}
 
       <div className="flex justify-center border-t pt-4">
         <DeleteMoveButton moveId={moveId} />
