@@ -22,6 +22,8 @@ import type {
 import type { MoveInput, NewItemInput } from "@/lib/api-client";
 import { LIMITS } from "@/client/config";
 import { ApiError } from "@/client/errors";
+import { planMove } from "@/lib/pricing/plan";
+import { applyPlanPaywall } from "@/lib/paywall";
 
 const FAIL_RATE = Number(process.env.NEXT_PUBLIC_MOCK_FAIL_RATE ?? 0) || 0;
 const STORAGE_KEY = "sos-mock-db-v2";
@@ -228,10 +230,16 @@ function estimatesView(moveId: string) {
   const items = allItemsOf(moveId);
   const raw = load().estimates.filter((e) => items.some((i) => i.id === e.itemId));
   const { visible, lockedItemIds } = lockFor(isPaid(moveId), raw);
+  const move = load().moves.find((m) => m.id === moveId) ?? load().known[moveId];
   return {
     estimates: visible,
     lockedItemIds,
     summary: raw.length ? summarize(items, raw) : null,
+    // v2: тот же planMove, что на сервере (чистая функция).
+    plan:
+      raw.length && move
+        ? applyPlanPaywall(planMove(move, items, raw, new Date().toISOString().slice(0, 10)), lockedItemIds, isPaid(moveId))
+        : null,
     listings: isPaid(moveId) ? load().listings.filter((l) => items.some((i) => i.id === l.itemId)) : [],
   };
 }
@@ -257,6 +265,7 @@ export function overlayDetails(real: MoveDetails): MoveDetails {
     estimates: useMockEstimates ? view.estimates : real.estimates,
     lockedItemIds: useMockEstimates ? view.lockedItemIds : real.lockedItemIds,
     summary: real.summary ?? view.summary,
+    plan: real.plan ?? view.plan,
     listings: real.listings.length ? real.listings : view.listings,
   };
 }
@@ -416,7 +425,9 @@ export const mockApi = {
     d.estimates = [...d.estimates.filter((e) => !ids.has(e.itemId)), ...raw];
     save();
     const { visible, lockedItemIds } = lockFor(isPaid(moveId), raw);
-    return { estimates: visible, lockedItemIds, summary: summarize(items, raw) };
+    const today = new Date().toISOString().slice(0, 10);
+    const plan = applyPlanPaywall(planMove(move, items, raw, today), lockedItemIds, isPaid(moveId));
+    return { estimates: visible, lockedItemIds, summary: summarize(items, raw), plan };
   },
 
   async createListing(itemId: string): Promise<Listing> {

@@ -4,8 +4,9 @@ import type { Estimate, EstimateResult, Item } from "@/types";
 import { apiError, isUuid, logError, notFound, parseJson, requireUser } from "@/lib/http";
 import { getOwnedMove } from "@/lib/db/access";
 import { estimateToRow, ITEM_COLUMNS, toItem } from "@/lib/db/mappers";
-import { applyPaywall } from "@/lib/paywall";
+import { applyPaywall, applyPlanPaywall } from "@/lib/paywall";
 import { estimateMove } from "@/lib/pricing";
+import { planMove } from "@/lib/pricing/plan";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const Body = z.object({ moveId: z.string().refine(isUuid, "Invalid moveId") }).strict();
@@ -78,7 +79,14 @@ export async function POST(req: Request) {
       if (stErr) throw stErr;
     }
 
-    const result: EstimateResult = applyPaywall(move, estimates, items);
+    const paywalled = applyPaywall(move, estimates, items);
+    // План — по ПОЛНЫМ цифрам; «сегодня» берём здесь, pricing остаётся чистым.
+    const today = new Date().toISOString().slice(0, 10);
+    const plan = planMove(move, items, estimates, today);
+    const result: EstimateResult = {
+      ...paywalled,
+      plan: applyPlanPaywall(plan, paywalled.lockedItemIds, move.status === "paid"),
+    };
     return NextResponse.json(result);
   } catch (err) {
     logError(ROUTE, err);
