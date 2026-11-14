@@ -7,6 +7,7 @@ import { ITEM_COLUMNS, toItem } from "@/lib/db/mappers";
 import { loadEstimates } from "@/lib/db/estimates";
 import { HOME_COLUMNS, homeFolder, toHome } from "@/lib/homeplus";
 import { replaceNewCost } from "@/lib/pricing/home";
+import { planMove } from "@/lib/pricing/plan";
 import { PHOTO_BUCKET } from "@/lib/storage";
 
 const Body = z.object({ moveId: z.string() }).strict();
@@ -31,7 +32,7 @@ export async function GET() {
 
 /**
  * POST /api/homes { moveId } → { homeId }. Опись из ОПЛАЧЕННОГО переезда: копия вещей,
- * кроме вердикта SELL (sentimental — всегда), и копия фото в {userId}/homes/{homeId}/.
+ * которые по плану переезда едут с владельцем (sentimental — всегда), и копия фото в {userId}/homes/{homeId}/.
  * Идемпотентно: дом из этого переезда уже есть → тот же homeId.
  */
 export async function POST(req: Request) {
@@ -57,8 +58,17 @@ export async function POST(req: Request) {
     if (itemsRes.error) throw itemsRes.error;
     const items = (itemsRes.data ?? []).map(toItem);
     // Владелец проверен выше, itemIds — от пользовательского клиента.
-    const estimates = new Map((await loadEstimates(items.map((i) => i.id))).map((e) => [e.itemId, e]));
-    const keep = items.filter((i) => i.sentimental || estimates.get(i.id)?.verdict !== "SELL");
+    const estimateList = await loadEstimates(items.map((i) => i.id));
+    const estimates = new Map(estimateList.map((e) => [e.itemId, e]));
+    // В опись идёт то, что реально едет в новый дом. Последнее слово — у плана переезда
+    // (как в отчёте): SELL, который не уменьшает грузовик, план везёт — значит, вещь будет дома.
+    const plan = planMove(move, items, estimateList, new Date().toISOString().slice(0, 10));
+    const action = new Map(plan.items.map((p) => [p.itemId, p.action]));
+    const keep = items.filter((i) => {
+      if (i.sentimental) return true;
+      const a = action.get(i.id);
+      return a ? a === "ship" : estimates.get(i.id)?.verdict !== "SELL";
+    });
 
     const created = await supabase
       .from("homes")
