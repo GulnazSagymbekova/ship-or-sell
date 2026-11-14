@@ -34,11 +34,7 @@ export function PlaceInput({ id, value, onChange, placeholder, invalid }: PlaceI
   useEffect(() => {
     const q = text.trim();
     if (picked && text === picked.label) return; // только что выбрали — не ищем заново
-    if (q.length < 2) {
-      setOptions([]);
-      setOpen(false);
-      return;
-    }
+    if (q.length < 2) return; // список очищает type(); здесь только запрос (без setState в теле эффекта)
     const seq = ++reqSeq.current;
     const timer = setTimeout(async () => {
       try {
@@ -67,6 +63,11 @@ export function PlaceInput({ id, value, onChange, placeholder, invalid }: PlaceI
     setText(v);
     setPicked(null);
     onChange(isZip(v) ? v.trim() : "");
+    if (v.trim().length < 2) {
+      reqSeq.current++; // отменить ответ на ещё летящий запрос
+      setOptions([]);
+      setOpen(false);
+    }
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

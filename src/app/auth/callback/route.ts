@@ -21,5 +21,9 @@ export async function GET(request: NextRequest) {
     logError("GET /auth/callback", error);
   }
 
-  return NextResponse.redirect(new URL(`/login?error=auth&next=${encodeURIComponent(next)}`, origin));
+  // Страницы /login нет (вход анонимный): при ошибке возвращаем туда, куда шли, с пометкой.
+  // proxy выдаст анонимную сессию, пользователь не упрётся в 404.
+  const back = new URL(next, origin);
+  back.searchParams.set("auth", "failed");
+  return NextResponse.redirect(back);
 }

@@ -33,11 +33,16 @@ type FormValues = z.infer<typeof schema>;
 const toIsoDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-/** Evaluated lazily (only when the calendar opens), so it's prerender-safe. */
+/**
+ * Past days and anything over 2 years ahead are disabled (the API rejects them too).
+ * Evaluated lazily (only when the calendar opens), so it's prerender-safe.
+ */
 function isPast(d: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return d < today;
+  const latest = new Date(today);
+  latest.setFullYear(latest.getFullYear() + 2);
+  return d < today || d > latest;
 }
 
 function FieldError({ message }: { message?: string }) {

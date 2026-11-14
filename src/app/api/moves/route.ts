@@ -6,6 +6,26 @@ import { distanceMiBetween } from "@/lib/zips";
 
 const zip = z.string().regex(/^\d{5}$/, "ZIP must be 5 digits");
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+/** Сколько вперёд можно планировать переезд: 2 года (с запасом на високосный год, как в календаре MoveForm). */
+const MAX_DAYS_AHEAD = 2 * 366;
+
+/** Настоящая календарная дата: Date.parse принимает «2026-02-31», а Postgres — нет (было 500). */
+function isCalendarDate(s: string): boolean {
+  const t = Date.parse(`${s}T00:00:00Z`);
+  return !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === s;
+}
+
+/**
+ * Не в прошлом и не дальше 2 лет. «Сегодня» — по UTC минус день: у пользователя в США
+ * календарный день может отставать от UTC, и его «сегодня» не должно стать «вчера».
+ */
+function isPlannableDate(s: string): boolean {
+  const t = Date.parse(`${s}T00:00:00Z`);
+  const todayUtc = Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`);
+  return t >= todayUtc - DAY_MS && t <= todayUtc + MAX_DAYS_AHEAD * DAY_MS;
+}
+
 const CreateMove = z
   .object({
     fromZip: zip,
@@ -14,7 +34,8 @@ const CreateMove = z
     moveDate: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, "moveDate must be YYYY-MM-DD")
-      .refine((s) => !Number.isNaN(Date.parse(`${s}T00:00:00Z`)), "Invalid date"),
+      .refine(isCalendarDate, "Invalid date")
+      .refine(isPlannableDate, "Move date must be between today and 2 years from now"),
   })
   .strict();
 

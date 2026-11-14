@@ -42,6 +42,17 @@ export async function POST(req: Request) {
     if (!move) return notFound();
     if (!(await photoBelongsToMove(supabase, photoPath, userId, moveId))) return notFound();
 
+    // Фото уже разобрано (Retry после таймаута клиента, двойной клик) — отдаём сохранённые вещи:
+    // без дублей и без второго вызова Claude. Ручные вещи добавляются к фото только после разбора.
+    const { data: already, error: alreadyErr } = await supabase
+      .from("items")
+      .select(ITEM_COLUMNS)
+      .eq("move_id", moveId)
+      .eq("photo_path", photoPath)
+      .order("created_at");
+    if (alreadyErr) throw alreadyErr;
+    if (already && already.length > 0) return NextResponse.json(already.map(toItem));
+
     const existing = await countItems(supabase, moveId);
     if (existing >= MAX_ITEMS_PER_MOVE) {
       return apiError("rate_limited", `Up to ${MAX_ITEMS_PER_MOVE} items per move`);

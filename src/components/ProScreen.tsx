@@ -112,14 +112,13 @@ export function budgetSteps(plan: MovePlan, moveDate: string): Step[] {
 
 function BudgetByDate({ plan, moveDate }: { plan: MovePlan; moveDate: string }) {
   const steps = budgetSteps(plan, moveDate);
-  let balance = 0;
-  let lowest = 0;
-  const rows = steps.map((s) => {
-    balance += s.amount;
-    lowest = Math.min(lowest, balance);
-    return { ...s, balance };
-  });
-  const setAside = -lowest;
+  // Нарастающий остаток без переприсваивания переменных в рендере (правило react-hooks/immutability).
+  const rows = steps.reduce<(Step & { balance: number })[]>((acc, s) => {
+    const prev = acc.length > 0 ? acc[acc.length - 1].balance : 0;
+    acc.push({ ...s, balance: prev + s.amount });
+    return acc;
+  }, []);
+  const setAside = -Math.min(0, ...rows.map((r) => r.balance));
   const firstOut = steps.find((s) => s.amount < 0)?.date ?? moveDate;
 
   return (
