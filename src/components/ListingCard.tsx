@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Download, ExternalLink, Loader2, RotateCw } from "lucide-react";
+import { CalendarClock, Copy, Download, ExternalLink, Loader2, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import type { Item, Listing } from "@/types";
 import type { ApiError } from "@/client/errors";
 import { errorMessage } from "@/client/errors";
 import { usd } from "@/client/utils";
+import { listingSignature, priceDropPlan } from "@/client/money";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -21,8 +22,39 @@ async function copy(text: string) {
   }
 }
 
+function withSignature(description: string) {
+  return `${description}\n\n${listingSignature()}`;
+}
+
 function fullText(l: Listing) {
-  return `${l.title}\n\n${l.description}\n\nPrice: ${usd.format(l.priceMax)}`;
+  return `${l.title}\n\n${withSignature(l.description)}\n\nPrice: ${usd.format(l.priceMax)}`;
+}
+
+function PriceDropHint({ listing, moveDate }: { listing: Listing; moveDate: string }) {
+  const plan = priceDropPlan(listing.priceQuick, listing.priceMax, moveDate);
+  if (!plan) return null;
+  return (
+    <div className="rounded-lg border border-dashed p-3 text-sm">
+      <p className="flex items-center gap-1.5 font-medium">
+        <CalendarClock className="size-4 text-muted-foreground" aria-hidden /> Price-drop plan
+      </p>
+      {plan.daysLeft <= 3 ? (
+        <p className="mt-1 text-muted-foreground">
+          {plan.daysLeft === 0 ? "You move today" : `${plan.daysLeft} day${plan.daysLeft === 1 ? "" : "s"} to your move`}{" "}
+          — list at {usd.format(listing.priceQuick)} so it sells in time.
+        </p>
+      ) : (
+        <ul className="mt-1.5 space-y-1">
+          {plan.steps.map((s) => (
+            <li key={s.label} className="flex justify-between gap-3">
+              <span className="text-muted-foreground">{s.label}</span>
+              <span className="font-medium tabular-nums">{usd.format(s.price)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 const EXT: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/svg+xml": "svg" };
@@ -52,6 +84,7 @@ export function ListingCard({
   error,
   photoUrl,
   tossup,
+  moveDate,
   onRetry,
   onPhotoError,
 }: {
@@ -60,6 +93,7 @@ export function ListingCard({
   error: ApiError | null;
   photoUrl?: string;
   tossup: boolean;
+  moveDate: string;
   onRetry: () => void;
   onPhotoError?: () => void;
 }) {
@@ -107,12 +141,13 @@ export function ListingCard({
                 <p className="font-semibold tabular-nums">{usd.format(listing.priceMax)}</p>
               </div>
             </div>
+            <PriceDropHint listing={listing} moveDate={moveDate} />
             <p className="text-sm whitespace-pre-line text-foreground/80">{listing.description}</p>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" onClick={() => copy(listing.title)}>
                 <Copy /> Copy title
               </Button>
-              <Button variant="outline" onClick={() => copy(listing.description)}>
+              <Button variant="outline" onClick={() => copy(withSignature(listing.description))}>
                 <Copy /> Copy description
               </Button>
               <Button variant="secondary" className="col-span-2" onClick={() => copy(fullText(listing))}>
@@ -124,6 +159,9 @@ export function ListingCard({
                 </a>
               </Button>
             </div>
+            <p className="text-center text-xs text-muted-foreground">
+              Copied text ends with a short &ldquo;Priced with Ship-or-Sell&rdquo; line. Delete it if you like.
+            </p>
           </>
         ) : error ? (
           <div className="space-y-3">

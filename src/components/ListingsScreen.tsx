@@ -115,6 +115,7 @@ export function ListingsScreen() {
             key={item.id}
             item={item}
             tossup={tossup}
+            moveDate={details.move.moveDate}
             listing={listings[item.id] ?? null}
             error={errors[item.id] ?? null}
             photoUrl={details.photoUrls[item.photoPath]}

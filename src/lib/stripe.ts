@@ -13,5 +13,5 @@ export function getStripe(): Stripe | null {
 }
 
 /** Цена разблокировки отчёта, центы USD. */
-export const UNLOCK_PRICE_CENTS = 1900;
-export const UNLOCK_PRODUCT_NAME = "Ship-or-Sell — full report & Marketplace listings";
+export const UNLOCK_PRICE_CENTS = 2900; // Move Pass ($29). Keep in sync with PASS_PRICE in src/client/money.ts.
+export const UNLOCK_PRODUCT_NAME = "Ship-or-Sell Move Pass — full report & Marketplace listings";

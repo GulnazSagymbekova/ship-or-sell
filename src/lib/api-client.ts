@@ -33,7 +33,7 @@ const LIVE = {
   items: true, // POST /api/items, PATCH/DELETE /api/items/:id
   estimate: true, // POST /api/estimate
   listings: true, // POST /api/listings (402 until the move is paid)
-  checkout: true, // POST /api/checkout (Stripe Checkout, $19)
+  checkout: true, // POST /api/checkout (Stripe Checkout, Move Pass $29)
 } as const;
 
 const live = (k: keyof typeof LIVE) => !USE_MOCKS && LIVE[k];
