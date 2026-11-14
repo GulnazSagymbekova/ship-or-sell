@@ -67,7 +67,7 @@ npm run dev
 |---|---|
 | 400 | показать `message` |
 | 401 | «Something went wrong, refresh the page» (бывает только если Supabase не выдал сессию) |
-| 402 | показать paywall «Unlock full report & listings — $19» |
+| 402 | показать paywall «Unlock full report & listings — $29» |
 | 404 | «Not found» |
 | 409 | показать `message` |
 | 429 | показать `message` (это лимит) |
@@ -99,7 +99,7 @@ npm run dev
 → `MoveDetails` (см. `src/types.ts`):
 
 - `photoUrls[photoPath]` — signed URL, живёт 10 минут. Если `<img>` выдал `onError`, перезапроси `/api/moves/:id`.
-- `lockedItemIds`: у этих вещей цифры = 0, карточку размывай и показывай «Unlock full report — $19». Вердикт у них настоящий — показывай его.
+- `lockedItemIds`: у этих вещей цифры = 0, карточку размывай и показывай «Unlock full report — $29». Вердикт у них настоящий — показывай его.
 - `summary === null`, пока не было расчёта.
 - `listings` пустой, пока не оплачено.
 - `fromCity` и `toCity` могут быть `null`, тогда показывай ZIP.
