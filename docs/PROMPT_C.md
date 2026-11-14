@@ -120,7 +120,7 @@ export function estimateMove(move: Move, items: Item[]): Estimate[];
    - `getOwnedMove(supabase, moveId)` → `Move | null` (чужой или несуществующий → `notFound()`).
 3. Уже `status === "paid"` → `apiError("conflict", "Already unlocked")`.
 4. Stripe Checkout Session:
-   - `mode: "payment"`, одна позиция: `price_data` в `usd`, `unit_amount: 1900`, `product_data.name: "Ship-or-Sell — full report & Marketplace listings"`;
+   - `mode: "payment"`, одна позиция: `price_data` в `usd`, `unit_amount: UNLOCK_PRICE_CENTS` (2900 = $29), `product_data.name: UNLOCK_PRODUCT_NAME` — обе константы в `src/lib/stripe.ts`;
    - **`metadata: { moveId }`** — без этого webhook не узнает, какой переезд оплачен;
    - `success_url`: `${process.env.NEXT_PUBLIC_APP_URL}/move/${moveId}/success?session_id={CHECKOUT_SESSION_ID}`;
    - `cancel_url`: `${process.env.NEXT_PUBLIC_APP_URL}/move/${moveId}`;
@@ -182,6 +182,6 @@ export function estimateMove(move: Move, items: Item[]): Estimate[];
 
 - Боль: переезд в другой штат, мебель — дорого везти, жалко продавать, непонятно что выгоднее.
 - Решение: фото → AI распознаёт вещи → по каждой: везти / продать / решай сама, с цифрами → готовое объявление для Marketplace.
-- Монетизация: $19 разово за переезд, бесплатно — вердикты всех вещей, сводка и полные цифры 3 вещей.
+- Монетизация: Move Pass $29 разово за переезд (Pro $79 — «coming soon»), бесплатно — вердикты всех вещей, сводка и полные цифры 3 вещей.
 - Конкуренты: только статичные таблицы средних цен, без анализа твоих вещей по фото.
 - Демо: на https://ship-or-sell.vercel.app в режиме инкогнито, тестовая карта Stripe.

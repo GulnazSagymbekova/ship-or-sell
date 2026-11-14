@@ -130,7 +130,7 @@ export interface MoveDetails {
 ### Paywall
 
 - **Бесплатно:** распознавание, редактирование, вердикты **всех** вещей, итоговая сводка (`summary`) и полные цифры **3 вещей** с наибольшей экономией.
-- **Платно — $19 разово за переезд** («Unlock full report & listings»): цифры остальных вещей и объявления для Marketplace.
+- **Платно — Move Pass $29 разово за переезд** (`UNLOCK_PRICE_CENTS` в `src/lib/stripe.ts`): цифры остальных вещей и объявления для Marketplace.
 - **Скрытие — на сервере**, не только blur на клиенте: у вещей из `lockedItemIds` сервер отдаёт `shipCost`, `resaleLow`, `resaleHigh`, `replaceCost`, `savings` = 0. Иначе цифры видны в DevTools. Клиент размывает карточки из `lockedItemIds`.
 - Оплата проверяется в `POST /api/estimate`, `GET /api/moves/:id` (что скрывать) и `POST /api/listings` (402 без оплаты).
 - Объявления доступны для вещей с вердиктом `SELL` и `TOSSUP`.
@@ -172,7 +172,7 @@ export interface MoveDetails {
 | `src/data/category-defaults.json` (типичные W/D/H, вес по категории) | C | B (`POST /api/items`) |
 | `estimateMove(move, items): Estimate[]` в `src/lib/pricing` — чистая функция, учитывает `sentimental` | C | B (`/api/estimate`) |
 | Все API-роуты, схема, RLS, AI-модули | B | A |
-| Stripe Checkout (`/api/checkout`), $19, `metadata.moveId`, success_url → `/move/{id}/success` | C | A |
+| Stripe Checkout (`/api/checkout`), $29 (Move Pass), `metadata.moveId`, success_url → `/move/{id}/success` | C | A |
 | Экраны, моки по типам выше | A | — |
 | Stripe webhook | B + C | — |
 
