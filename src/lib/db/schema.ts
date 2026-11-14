@@ -141,3 +141,54 @@ export const aiCalls = pgTable(
     index("ai_calls_created_idx").on(t.createdAt),
   ],
 );
+
+// ---------- Home+ (supabase/migrations/0003_home_plus.sql) ----------
+
+export const homes = pgTable(
+  "homes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => authUsers.id, { onDelete: "cascade" }),
+    sourceMoveId: uuid("source_move_id").references(() => moves.id, { onDelete: "set null" }),
+    name: text("name").notNull().default("My home"),
+    coverageLimit: money("coverage_limit"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("homes_user_idx").on(t.userId, t.createdAt.desc())],
+);
+
+export const homeItems = pgTable(
+  "home_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    homeId: uuid("home_id").notNull().references(() => homes.id, { onDelete: "cascade" }),
+    photoPath: text("photo_path"),
+    category: text("category").notNull(),
+    name: text("name").notNull(),
+    brand: text("brand"),
+    material: text("material").notNull(),
+    condition: smallint("condition").notNull(),
+    widthIn: real("width_in").notNull(),
+    depthIn: real("depth_in").notNull(),
+    heightIn: real("height_in").notNull(),
+    replaceNew: money("replace_new").notNull(),
+    purchasePrice: money("purchase_price"),
+    serialNumber: text("serial_number"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("home_items_home_idx").on(t.homeId)],
+);
+
+export const subscriptions = pgTable("subscriptions", {
+  userId: uuid("user_id").primaryKey().references(() => authUsers.id, { onDelete: "cascade" }),
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  stripeSubscriptionId: text("stripe_subscription_id").notNull().unique(),
+  status: text("status", { enum: ["trialing", "active", "past_due", "canceled", "incomplete", "unpaid"] }).notNull(),
+  currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const homePlusWaitlist = pgTable("home_plus_waitlist", {
+  userId: uuid("user_id").primaryKey().references(() => authUsers.id, { onDelete: "cascade" }),
+  createdAt: createdAt(),
+});

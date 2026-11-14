@@ -8,6 +8,7 @@ import { api } from "@/lib/api-client";
 import { toApiError } from "@/client/errors";
 import { Button } from "@/components/ui/button";
 import { Confetti } from "@/components/Confetti";
+import { SaveInventoryCard } from "@/components/SaveInventoryCard";
 import { ErrorState } from "@/components/ErrorState";
 
 const POLL_MS = 2000;
@@ -95,6 +96,7 @@ export function SuccessScreen() {
           <Button asChild variant="ghost">
             <Link href={`/move/${moveId}/report`}>See full report</Link>
           </Button>
+          <SaveInventoryCard moveId={moveId} />
         </>
       ) : null}
 
