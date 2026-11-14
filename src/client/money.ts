@@ -63,6 +63,8 @@ export function priceDropPlan(
   priceQuick: number,
   priceMax: number,
   moveDate: string,
+  /** v2: plan's sellBy. Hold the max price until then, then drop to the middle. */
+  sellBy?: string | null,
 ): { daysLeft: number; steps: PriceStep[] } | null {
   const move = parseDay(moveDate);
   if (!move) return null;
@@ -83,11 +85,14 @@ export function priceDropPlan(
         { label: `${at(3)} (3 days out)`, price: priceQuick },
       ],
     };
+  const by = sellBy ? parseDay(sellBy) : null;
+  const byDays = by ? Math.round((move.getTime() - by.getTime()) / DAY) : 7;
+  const dropAt = byDays > 3 && byDays <= daysLeft ? byDays : 7;
   return {
     daysLeft,
     steps: [
-      { label: "Now", price: priceMax },
-      { label: `${at(7)} (1 week out)`, price: mid },
+      { label: dropAt === daysLeft ? "Now" : `Now → ${at(dropAt)}`, price: priceMax },
+      { label: `${at(dropAt)} (${dropAt === 7 ? "1 week" : `${dropAt} days`} out)`, price: mid },
       { label: `${at(3)} (3 days out)`, price: priceQuick },
     ],
   };
