@@ -14,7 +14,7 @@ function appUrl(req: Request): string {
 }
 
 /**
- * POST /api/checkout { moveId } → { url } — Stripe Checkout на $19 за переезд.
+ * POST /api/checkout { moveId } → { url } — Stripe Checkout, Move Pass $29 за переезд.
  * Статус "paid" ставит webhook (/api/stripe/webhook) по metadata.moveId, не эта ручка
  * и не страница success. В Stripe не передаём email, имя, ZIP — только moveId.
  */

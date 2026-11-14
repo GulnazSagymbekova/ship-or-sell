@@ -72,7 +72,7 @@ export function ReportScreen() {
           <div key={item.id}>
             {!paid && locked && (i === 0 || !rows[i - 1].locked) ? (
               <div className="mb-3">
-                <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} />
+                <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} summary={details.summary} />
               </div>
             ) : null}
             <EstimateCard
@@ -87,7 +87,7 @@ export function ReportScreen() {
         ))}
       </section>
 
-      {!paid && details.lockedItemIds.length === 0 ? <Paywall moveId={moveId} lockedCount={0} /> : null}
+      {!paid && details.lockedItemIds.length === 0 ? <Paywall moveId={moveId} lockedCount={0} summary={details.summary} /> : null}
 
       <div className="flex justify-center border-t pt-4">
         <DeleteMoveButton moveId={moveId} />
