@@ -75,3 +75,23 @@ export async function getOwnedHome(supabase: SupabaseServerClient, homeId: strin
 
 /** Папка фото описи. Первая папка = userId, иначе не пустит политика bucket. */
 export const homeFolder = (userId: string, homeId: string) => `${userId}/homes/${homeId}`;
+
+/** Home+ price: $4.99/mo after a 30-day trial. Price is created inline in Checkout (no dashboard product needed). */
+export const HOME_PLUS_PRICE_CENTS = 499;
+export const HOME_PLUS_TRIAL_DAYS = 30;
+export const HOME_PLUS_PRODUCT_NAME = "Ship-or-Sell Home+ — home inventory for insurance";
+
+/** Stripe status → our CHECK list in 0003_home_plus.sql. */
+export function toSubscriptionStatus(s: string): "trialing" | "active" | "past_due" | "canceled" | "incomplete" | "unpaid" {
+  switch (s) {
+    case "trialing":
+    case "active":
+    case "past_due":
+    case "canceled":
+    case "incomplete":
+    case "unpaid":
+      return s;
+    default: // incomplete_expired, paused, …
+      return "canceled";
+  }
+}

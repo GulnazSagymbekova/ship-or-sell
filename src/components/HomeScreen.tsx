@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCircle2, Download, House, Loader2, PlusCircle, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import type { HomeDetails } from "@/home-types";
@@ -31,6 +31,10 @@ export function HomeScreen() {
   const [details, setDetails] = useState<HomeDetails | null>(null);
   const [error, setError] = useState<unknown>(null);
 
+  // Back from Stripe: the webhook activates Home+ a few seconds later — poll until it does.
+  const justSubscribed = useSearchParams().get("subscribed") === "1";
+  const [activating, setActivating] = useState(justSubscribed);
+
   const load = useCallback(async () => {
     setError(null);
     try {
@@ -43,6 +47,34 @@ export function HomeScreen() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data load
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!activating) return;
+    if (details?.homePlus.active) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- stop polling once active
+      setActivating(false);
+      toast.success("Home+ is on. Your 30-day free trial has started.");
+      return;
+    }
+    let tries = 0;
+    const timer = setInterval(async () => {
+      tries++;
+      try {
+        const d = await api.getHome(id);
+        setDetails(d);
+        if (d.homePlus.active || tries >= 10) {
+          clearInterval(timer);
+          setActivating(false);
+        }
+      } catch {
+        if (tries >= 10) {
+          clearInterval(timer);
+          setActivating(false);
+        }
+      }
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [activating, details?.homePlus.active, id]);
 
   if (error) return <ErrorState error={error} onRetry={load} />;
   if (!details) return <LoadingState rows={4} />;
@@ -89,7 +121,7 @@ export function HomeScreen() {
         </ul>
       </section>
 
-      <HomePlusBlock details={details} />
+      <HomePlusBlock details={details} activating={activating} />
 
       <div className="flex justify-center border-t pt-4">
         <DeleteHomeButton homeId={details.home.id} />
@@ -168,10 +200,23 @@ function Coverage({ details, onSaved }: { details: HomeDetails; onSaved: (limit:
   );
 }
 
-function HomePlusBlock({ details }: { details: HomeDetails }) {
+function HomePlusBlock({ details, activating }: { details: HomeDetails; activating: boolean }) {
   const [joined, setJoined] = useState(false);
   const [busy, setBusy] = useState(false);
   const active = details.homePlus.active;
+
+  const redirect = async (get: () => Promise<{ url: string }>) => {
+    setBusy(true);
+    try {
+      const { url } = await get();
+      window.location.assign(url);
+    } catch (e) {
+      toast.error(errorMessage(e, { network: "Couldn't open Stripe. Please try again." }));
+      setBusy(false);
+    }
+  };
+  const subscribe = () => redirect(() => api.homePlusCheckout(details.home.id));
+  const manage = () => redirect(() => api.billingPortal(details.home.id));
 
   const join = async () => {
     setBusy(true);
@@ -207,11 +252,38 @@ function HomePlusBlock({ details }: { details: HomeDetails }) {
         ))}
       </ul>
       {active ? (
-        <Button asChild size="lg" className="mt-4 w-full">
-          <a href={`/api/homes/${details.home.id}/export`}>
-            <Download /> Export CSV
-          </a>
-        </Button>
+        <div className="mt-4 space-y-2">
+          <p className="text-center text-xs text-muted-foreground">
+            {details.homePlus.status === "trialing" ? "Free trial active" : "Subscription active"}
+          </p>
+          <Button asChild size="lg" className="w-full">
+            <a href={`/api/homes/${details.home.id}/export`}>
+              <Download /> Export CSV for your insurer
+            </a>
+          </Button>
+          <Button variant="ghost" className="w-full" onClick={manage} disabled={busy}>
+            Manage subscription
+          </Button>
+        </div>
+      ) : activating ? (
+        <p className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-muted p-3 text-sm">
+          <Loader2 className="size-4 animate-spin" /> Activating Home+…
+        </p>
+      ) : details.homePlus.billingEnabled ? (
+        <div className="mt-4 space-y-2">
+          <Button size="lg" className="w-full" onClick={subscribe} disabled={busy}>
+            {busy ? <Loader2 className="animate-spin" /> : null}
+            Start 30-day free trial
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            Then $4.99/mo. Cancel anytime. Secure checkout by Stripe.
+          </p>
+          {details.homePlus.status === "past_due" ? (
+            <Button variant="ghost" className="w-full" onClick={manage} disabled={busy}>
+              Update payment method
+            </Button>
+          ) : null}
+        </div>
       ) : joined ? (
         <p className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-sell/10 p-3 text-sm font-medium text-sell">
           <CheckCircle2 className="size-4" /> You&apos;re on the list
@@ -219,7 +291,7 @@ function HomePlusBlock({ details }: { details: HomeDetails }) {
       ) : (
         <Button size="lg" className="mt-4 w-full" onClick={join} disabled={busy}>
           {busy ? <Loader2 className="animate-spin" /> : null}
-          {details.homePlus.billingEnabled ? "Start free trial — coming soon" : "Join the waitlist"}
+          Join the waitlist
         </Button>
       )}
     </section>
