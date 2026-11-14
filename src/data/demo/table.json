@@ -1,5 +1,28 @@
 [
-  { "category": "dining_table", "name": "Solid oak dining table for 6", "brand": null, "material": "solid oak", "condition": 4, "widthIn": 72, "depthIn": 38, "heightIn": 30, "volumeCuFt": 53, "weightLb": 120, "aiConfidence": 0.9 },
-  { "category": "dining_chair", "name": "Oak dining chair", "brand": null, "material": "solid oak", "condition": 3, "widthIn": 18, "depthIn": 20, "heightIn": 36, "volumeCuFt": 8, "weightLb": 15, "aiConfidence": 0.85 },
-  { "category": "dining_chair", "name": "Oak dining chair", "brand": null, "material": "solid oak", "condition": 3, "widthIn": 18, "depthIn": 20, "heightIn": 36, "volumeCuFt": 8, "weightLb": 15, "aiConfidence": 0.8 }
+  {
+    "category": "desk",
+    "name": "Vintage wood-veneer table with chrome metal legs on casters",
+    "brand": null,
+    "material": "veneered particleboard with chrome-plated steel legs",
+    "condition": 2,
+    "widthIn": 43,
+    "depthIn": 27,
+    "heightIn": 29,
+    "volumeCuFt": 22.5,
+    "weightLb": 45,
+    "aiConfidence": 0.6
+  },
+  {
+    "category": "rug",
+    "name": "Ornate floral pattern area rug, cream, black and burgundy",
+    "brand": null,
+    "material": "synthetic fiber",
+    "condition": 3,
+    "widthIn": 96,
+    "depthIn": 66,
+    "heightIn": 0.5,
+    "volumeCuFt": 2.1,
+    "weightLb": 25,
+    "aiConfidence": 0.45
+  }
 ]

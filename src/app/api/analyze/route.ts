@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import type { MoveStatus } from "@/types";
-import { apiError, isUuid, logError, notFound, parseJson, requireUser } from "@/lib/http";
+import { apiError, isUuid, logError, notFound, parseJson, requireUser, type SupabaseServerClient } from "@/lib/http";
 import { countItems, getOwnedMove, MAX_ITEMS_PER_MOVE, photoBelongsToMove } from "@/lib/db/access";
 import { ITEM_COLUMNS, itemToRow, toItem } from "@/lib/db/mappers";
 import { AiInvalidOutputError, AiUnavailableError, demoFallbackEnabled, devDetail } from "@/lib/ai/client";
@@ -18,6 +18,13 @@ const Body = z
   .strict();
 
 const ROUTE = "POST /api/analyze";
+
+/** Номер фото в переезде по порядку загрузки — для выбора демо-набора (DEMO_FALLBACK). */
+async function photoIndex(supabase: SupabaseServerClient, moveId: string, photoPath: string) {
+  const { data } = await supabase.from("photos").select("path").eq("move_id", moveId).order("created_at");
+  const idx = (data ?? []).findIndex((p) => p.path === photoPath);
+  return idx < 0 ? 0 : idx;
+}
 
 /** POST /api/analyze { moveId, photoPath } → Item[] (вещи, найденные на этом фото). */
 export async function POST(req: Request) {
@@ -46,7 +53,7 @@ export async function POST(req: Request) {
     if (!limit.ok) {
       if (limit.scope === "hourly") return apiError("rate_limited", hourlyMessage("analyze", limit.limit));
       if (!demoFallbackEnabled()) return apiError("unavailable", "Daily AI limit reached");
-      detected = demoItemsFor(photoPath);
+      detected = demoItemsFor(await photoIndex(supabase, moveId, photoPath));
     }
 
     if (!detected) {
@@ -72,7 +79,7 @@ export async function POST(req: Request) {
               ? apiError("unavailable", `AI is temporarily unavailable, try again in a minute${devDetail(err)}`)
               : apiError("internal", "Could not read this photo, try another one");
           }
-          detected = demoItemsFor(photoPath);
+          detected = demoItemsFor(await photoIndex(supabase, moveId, photoPath));
         } else {
           throw err;
         }

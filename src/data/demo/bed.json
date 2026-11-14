@@ -1,5 +1,54 @@
 [
-  { "category": "bed_frame", "name": "Queen upholstered bed frame", "brand": null, "material": "fabric over wood", "condition": 3, "widthIn": 64, "depthIn": 86, "heightIn": 48, "volumeCuFt": 40, "weightLb": 110, "aiConfidence": 0.85 },
-  { "category": "mattress", "name": "Queen memory foam mattress", "brand": null, "material": "memory foam", "condition": 3, "widthIn": 60, "depthIn": 80, "heightIn": 12, "volumeCuFt": 37, "weightLb": 75, "aiConfidence": 0.75 },
-  { "category": "rug", "name": "Beige wool area rug 8x10", "brand": null, "material": "wool", "condition": 3, "widthIn": 96, "depthIn": 120, "heightIn": 1, "volumeCuFt": 10, "weightLb": 30, "aiConfidence": 0.6 }
+  {
+    "category": "bed_frame",
+    "name": "Full-size solid wood platform bed with 4 rolling storage drawers",
+    "brand": null,
+    "material": "solid birch/maple wood",
+    "condition": 5,
+    "widthIn": 57,
+    "depthIn": 77,
+    "heightIn": 35,
+    "volumeCuFt": 108,
+    "weightLb": 130,
+    "aiConfidence": 0.85
+  },
+  {
+    "category": "mattress",
+    "name": "Full-size mattress with grey bedding",
+    "brand": null,
+    "material": "foam/innerspring with fabric bedding",
+    "condition": 4,
+    "widthIn": 54,
+    "depthIn": 75,
+    "heightIn": 10,
+    "volumeCuFt": 26,
+    "weightLb": 70,
+    "aiConfidence": 0.6
+  },
+  {
+    "category": "nightstand",
+    "name": "Light wood 2-drawer nightstand",
+    "brand": null,
+    "material": "solid birch/maple wood",
+    "condition": 5,
+    "widthIn": 24,
+    "depthIn": 16,
+    "heightIn": 26,
+    "volumeCuFt": 6.5,
+    "weightLb": 35,
+    "aiConfidence": 0.8
+  },
+  {
+    "category": "rug",
+    "name": "Large grey distressed-pattern area rug",
+    "brand": null,
+    "material": "polypropylene/synthetic",
+    "condition": 4,
+    "widthIn": 96,
+    "depthIn": 120,
+    "heightIn": 0.5,
+    "volumeCuFt": 4,
+    "weightLb": 45,
+    "aiConfidence": 0.7
+  }
 ]

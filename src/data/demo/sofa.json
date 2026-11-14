@@ -1,5 +1,28 @@
 [
-  { "category": "sofa", "name": "3-seat grey fabric sofa", "brand": null, "material": "fabric", "condition": 3, "widthIn": 84, "depthIn": 36, "heightIn": 34, "volumeCuFt": 65, "weightLb": 140, "aiConfidence": 0.9 },
-  { "category": "coffee_table", "name": "Round walnut coffee table", "brand": null, "material": "walnut veneer", "condition": 4, "widthIn": 36, "depthIn": 36, "heightIn": 17, "volumeCuFt": 14, "weightLb": 35, "aiConfidence": 0.8 },
-  { "category": "lamp", "name": "Black metal floor lamp", "brand": null, "material": "metal", "condition": 4, "widthIn": 12, "depthIn": 12, "heightIn": 65, "volumeCuFt": 6, "weightLb": 10, "aiConfidence": 0.7 }
+  {
+    "category": "sofa",
+    "name": "Black fabric sofa bed with metal legs and storage, covered with throw",
+    "brand": null,
+    "material": "fabric over wood/particleboard frame, metal legs",
+    "condition": 3,
+    "widthIn": 80,
+    "depthIn": 32,
+    "heightIn": 28,
+    "volumeCuFt": 43,
+    "weightLb": 120,
+    "aiConfidence": 0.7
+  },
+  {
+    "category": "rug",
+    "name": "Rolled patterned carpet runner leaning on wall",
+    "brand": null,
+    "material": "synthetic fiber",
+    "condition": 3,
+    "widthIn": 12,
+    "depthIn": 12,
+    "heightIn": 50,
+    "volumeCuFt": 4,
+    "weightLb": 25,
+    "aiConfidence": 0.4
+  }
 ]

@@ -5,13 +5,13 @@ import sofa from "@/data/demo/sofa.json";
 import table from "@/data/demo/table.json";
 import type { DetectedItem } from "./vision";
 
-// Заранее сохранённые ответы распознавания для DEMO_FALLBACK (страховка для демо).
-// Файлы в src/data/demo/*.json; в B3 заменить реальными ответами Claude на 4 демо-фото.
-const DEMO_SETS = [sofa, dresser, table, bed] as unknown as DetectedItem[][];
+// Настоящие ответы Claude на 4 демо-фото команды (снято на проде 15.11.2026) — для DEMO_FALLBACK.
+// Порядок = порядок загрузки на демо: 1) кровать, 2) стол, 3) комод, 4) диван.
+// Загружайте фото на демо в том же порядке — тогда даже без Claude ответ совпадёт с фото.
+const DEMO_SETS = [bed, table, dresser, sofa] as unknown as DetectedItem[][];
 
-/** Детерминированно выбирает демо-набор по photoPath: одно и то же фото → тот же ответ. */
-export function demoItemsFor(photoPath: string): DetectedItem[] {
-  let h = 0;
-  for (let i = 0; i < photoPath.length; i++) h = (h * 31 + photoPath.charCodeAt(i)) >>> 0;
-  return DEMO_SETS[h % DEMO_SETS.length];
+/** Демо-набор по номеру фото в переезде (0 — первое загруженное). */
+export function demoItemsFor(photoIndex: number): DetectedItem[] {
+  const i = Number.isFinite(photoIndex) && photoIndex >= 0 ? Math.floor(photoIndex) : 0;
+  return DEMO_SETS[i % DEMO_SETS.length];
 }
