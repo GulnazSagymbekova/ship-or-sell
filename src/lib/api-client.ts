@@ -4,7 +4,7 @@
 // to the real backend, flip its flag in LIVE below — the UI doesn't change.
 // NEXT_PUBLIC_USE_MOCKS=true mocks everything (no Supabase env needed).
 
-import type { Category, EstimateResult, Item, Listing, Move, MoveDetails, MoveType } from "@/types";
+import type { Category, CheckoutPlan, EstimateResult, Item, Listing, Move, MoveDetails, MoveType } from "@/types";
 import type { Place } from "@/lib/places";
 import { USE_MOCKS } from "@/client/config";
 import { ApiError, kindFromStatus } from "@/client/errors";
@@ -94,7 +94,8 @@ const real = {
   deleteItem: (id: string) => request<void>(`/api/items/${enc(id)}`, { method: "DELETE" }),
   estimate: (moveId: string) => request<EstimateResult>("/api/estimate", { method: "POST", body: json({ moveId }) }),
   createListing: (itemId: string) => request<Listing>("/api/listings", { method: "POST", body: json({ itemId }) }),
-  checkout: (moveId: string) => request<{ url: string }>("/api/checkout", { method: "POST", body: json({ moveId }) }),
+  checkout: (moveId: string, plan: CheckoutPlan = "pass") =>
+    request<{ url: string }>("/api/checkout", { method: "POST", body: json({ moveId, plan }) }),
   searchPlaces: (q: string) => request<Place[]>(`/api/places?q=${enc(q)}`),
 };
 
@@ -129,7 +130,8 @@ export const api: {
     return mockApi.estimate(moveId);
   },
   createListing: (itemId: string) => (live("listings") ? real.createListing(itemId) : mockApi.createListing(itemId)),
-  checkout: (moveId: string) => (live("checkout") ? real.checkout(moveId) : mockApi.checkout(moveId)),
+  checkout: (moveId: string, plan: CheckoutPlan = "pass") =>
+    live("checkout") ? real.checkout(moveId, plan) : mockApi.checkout(moveId),
   // Публичный справочник городов — всегда настоящий, и в mock-режиме тоже.
   searchPlaces: (q: string) => real.searchPlaces(q),
 };

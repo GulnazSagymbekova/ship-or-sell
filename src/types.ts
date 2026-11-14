@@ -62,7 +62,12 @@ export interface MoveDetails {
   summary: MoveSummary | null;       // null, пока оценок нет
   listings: Listing[];               // пусто, пока status !== "paid"
   plan?: MovePlan | null;            // v2; null, пока оценок нет
+  tier?: MoveTier;                   // что оплачено: free | pass ($29) | pro ($79)
 }
+
+/** Тариф переезда. Считается сервером по сумме оплат (payments.amount_cents). */
+export type MoveTier = "free" | "pass" | "pro";
+export type CheckoutPlan = "pass" | "pro";
 
 // --- План переезда (v2, «Move Money Plan»). Только добавления, типы выше не меняются. ---
 

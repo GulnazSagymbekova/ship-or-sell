@@ -3,7 +3,7 @@
 import { useEffect, useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Tag } from "lucide-react";
+import { ArrowLeft, Sparkles, Tag } from "lucide-react";
 import { toast } from "sonner";
 import type { Estimate, Item, PlanAction, PlanItem } from "@/types";
 import { isStale } from "@/client/staleReport";
@@ -14,7 +14,7 @@ import { DeleteMoveButton } from "@/components/DeleteMoveButton";
 import { ErrorState } from "@/components/ErrorState";
 import { EstimateCard } from "@/components/EstimateCard";
 import { LoadingState } from "@/components/LoadingState";
-import { Paywall } from "@/components/Paywall";
+import { Paywall, UpgradeToPro } from "@/components/Paywall";
 import { PlanCard, SmartMoveCard } from "@/components/PlanCard";
 import { SummaryCard } from "@/components/SummaryCard";
 
@@ -64,11 +64,20 @@ export function ReportScreen() {
       {plan ? <SmartMoveCard plan={plan} paid={paid} /> : null}
 
       {paid ? (
-        <Button asChild size="lg" className="w-full">
-          <Link href={`/move/${moveId}/listings`}>
-            <Tag /> Get Marketplace listings
-          </Link>
-        </Button>
+        <div className="space-y-2">
+          <Button asChild size="lg" className="w-full">
+            <Link href={`/move/${moveId}/listings`}>
+              <Tag /> Get Marketplace listings
+            </Link>
+          </Button>
+          {details.tier === "pro" ? (
+            <Button asChild size="lg" variant="outline" className="w-full">
+              <Link href={`/move/${moveId}/pro`}>
+                <Sparkles className="text-amber-500" /> Open Move Pro: budget, mover check, inventory
+              </Link>
+            </Button>
+          ) : null}
+        </div>
       ) : null}
 
       {plan ? (
@@ -118,6 +127,8 @@ export function ReportScreen() {
       {!paid && details.lockedItemIds.length === 0 ? (
         <Paywall moveId={moveId} lockedCount={0} summary={details.summary} cash={cash} />
       ) : null}
+
+      {paid && details.tier === "pass" ? <UpgradeToPro moveId={moveId} /> : null}
 
       <div className="flex justify-center border-t pt-4">
         <DeleteMoveButton moveId={moveId} />
