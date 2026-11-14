@@ -9,6 +9,7 @@ import type { Item } from "@/types";
 import { api } from "@/lib/api";
 import { LIMITS } from "@/lib/config";
 import { toApiError, type ApiError } from "@/lib/errors";
+import { markStale } from "@/lib/staleReport";
 
 export type PhotoStatus = "queued" | "uploading" | "analyzing" | "done" | "error";
 
@@ -55,6 +56,7 @@ export function usePhotoQueue(moveId: string) {
         patch(id, { status: "analyzing", error: null });
         const items = await api.analyze(moveId, photoPath);
         patch(id, { status: "done", items });
+        if (items.length) markStale(moveId); // report must be recalculated
       } catch (e) {
         if (entry()) patch(id, { status: "error", error: toApiError(e) });
       }

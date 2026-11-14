@@ -1,10 +1,14 @@
-import { AppShell, PageTitle } from "@/components/AppShell";
+import { Suspense } from "react";
+import { AppShell } from "@/components/AppShell";
+import { LoadingState } from "@/components/LoadingState";
+import { ReviewScreen } from "@/components/ReviewScreen";
 
-// Placeholder so the A1 flow has somewhere to land. The real review screen is A2.
 export default function ReviewPage() {
   return (
     <AppShell>
-      <PageTitle title="Review items" subtitle="Coming next: edit, add and confirm items before we calculate." />
+      <Suspense fallback={<LoadingState rows={3} />}>
+        <ReviewScreen />
+      </Suspense>
     </AppShell>
   );
 }
