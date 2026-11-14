@@ -1,0 +1,13 @@
+{
+  "_comment_": "STUB от B для разработки. C заменяет этот файл полным справочником ZIP → { lat, lng, city, state }.",
+  "10001": { "lat": 40.7506, "lng": -73.9972, "city": "New York", "state": "NY" },
+  "02108": { "lat": 42.3576, "lng": -71.0684, "city": "Boston", "state": "MA" },
+  "60601": { "lat": 41.8858, "lng": -87.6181, "city": "Chicago", "state": "IL" },
+  "78701": { "lat": 30.2711, "lng": -97.7437, "city": "Austin", "state": "TX" },
+  "33101": { "lat": 25.7790, "lng": -80.1980, "city": "Miami", "state": "FL" },
+  "80202": { "lat": 39.7527, "lng": -104.9992, "city": "Denver", "state": "CO" },
+  "85004": { "lat": 33.4515, "lng": -112.0687, "city": "Phoenix", "state": "AZ" },
+  "98101": { "lat": 47.6114, "lng": -122.3305, "city": "Seattle", "state": "WA" },
+  "94103": { "lat": 37.7725, "lng": -122.4091, "city": "San Francisco", "state": "CA" },
+  "90012": { "lat": 34.0614, "lng": -118.2385, "city": "Los Angeles", "state": "CA" }
+}
