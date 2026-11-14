@@ -51,7 +51,7 @@ export function toApiError(e: unknown): ApiError {
 const FALLBACK: Record<ApiErrorKind, string> = {
   validation: "Something in the form looks off. Please check and try again.",
   unauthorized: "Something went wrong, refresh the page.",
-  payment_required: "Unlock full report & listings — $19",
+  payment_required: "Unlock full report & listings — $29",
   not_found: "Not found.",
   conflict: "That can't be done right now.",
   rate_limited: "You've hit a limit. Try again later.",

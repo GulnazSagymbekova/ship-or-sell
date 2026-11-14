@@ -22,8 +22,20 @@ import type {
 import type { MoveInput, NewItemInput } from "@/lib/api-client";
 import { LIMITS } from "@/client/config";
 import { ApiError } from "@/client/errors";
-import { planMove } from "@/lib/pricing/plan";
-import { applyPlanPaywall } from "@/lib/paywall";
+import { buildPlan, lockPlan } from "@/mock/plan";
+
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+function planFor(moveId: string, items: Item[], raw: Estimate[], lockedItemIds: string[]) {
+  if (!raw.length) return null;
+  const d = load();
+  const move = d.moves.find((m) => m.id === moveId) ?? d.known[moveId];
+  if (!move) return null;
+  return lockPlan(buildPlan(move, items, raw, todayIso()), lockedItemIds, isPaid(moveId));
+}
 
 const FAIL_RATE = Number(process.env.NEXT_PUBLIC_MOCK_FAIL_RATE ?? 0) || 0;
 const STORAGE_KEY = "sos-mock-db-v2";
@@ -230,16 +242,11 @@ function estimatesView(moveId: string) {
   const items = allItemsOf(moveId);
   const raw = load().estimates.filter((e) => items.some((i) => i.id === e.itemId));
   const { visible, lockedItemIds } = lockFor(isPaid(moveId), raw);
-  const move = load().moves.find((m) => m.id === moveId) ?? load().known[moveId];
   return {
     estimates: visible,
     lockedItemIds,
     summary: raw.length ? summarize(items, raw) : null,
-    // v2: тот же planMove, что на сервере (чистая функция).
-    plan:
-      raw.length && move
-        ? applyPlanPaywall(planMove(move, items, raw, new Date().toISOString().slice(0, 10)), lockedItemIds, isPaid(moveId))
-        : null,
+    plan: planFor(moveId, items, raw, lockedItemIds),
     listings: isPaid(moveId) ? load().listings.filter((l) => items.some((i) => i.id === l.itemId)) : [],
   };
 }
@@ -265,7 +272,7 @@ export function overlayDetails(real: MoveDetails): MoveDetails {
     estimates: useMockEstimates ? view.estimates : real.estimates,
     lockedItemIds: useMockEstimates ? view.lockedItemIds : real.lockedItemIds,
     summary: real.summary ?? view.summary,
-    plan: real.plan ?? view.plan,
+    plan: real.plan ?? (useMockEstimates ? view.plan : null),
     listings: real.listings.length ? real.listings : view.listings,
   };
 }
@@ -425,8 +432,7 @@ export const mockApi = {
     d.estimates = [...d.estimates.filter((e) => !ids.has(e.itemId)), ...raw];
     save();
     const { visible, lockedItemIds } = lockFor(isPaid(moveId), raw);
-    const today = new Date().toISOString().slice(0, 10);
-    const plan = applyPlanPaywall(planMove(move, items, raw, today), lockedItemIds, isPaid(moveId));
+    const plan = lockPlan(buildPlan(move, items, raw, todayIso()), lockedItemIds, isPaid(moveId));
     return { estimates: visible, lockedItemIds, summary: summarize(items, raw), plan };
   },
 

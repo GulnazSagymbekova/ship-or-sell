@@ -48,7 +48,7 @@ export interface EstimateResult {
   estimates: Estimate[];
   lockedItemIds: string[]; // цифры обнулены сервером, verdict настоящий
   summary: MoveSummary;    // всегда полная, даже без оплаты
-  plan: MovePlan;          // v2: план переезда (агрегаты всегда, items без locked, tips только после оплаты)
+  plan?: MovePlan;          // v2; необязательно, пока сервер не отдаёт план
 }
 
 // Ответ GET /api/moves/:id
@@ -61,10 +61,10 @@ export interface MoveDetails {
   lockedItemIds: string[];
   summary: MoveSummary | null;       // null, пока оценок нет
   listings: Listing[];               // пусто, пока status !== "paid"
-  plan: MovePlan | null;             // v2: null, пока нет оценок
+  plan?: MovePlan | null;            // v2; null, пока оценок нет
 }
 
-// --- v2: план переезда (MovePlan). Только добавления, типы выше не меняются. ---
+// --- План переезда (v2, «Move Money Plan»). Только добавления, типы выше не меняются. ---
 
 export type PlanAction = "ship" | "sell" | "sell_buy_later" | "donate";
 
@@ -91,3 +91,4 @@ export interface MovePlan {
   items: PlanItem[];         // у неоплаченного переезда только вещи НЕ из lockedItemIds
   tips: string[];            // "Sell Sofa, Desk and Rug to drop to a 15 ft truck: save $420"; пусто, если не оплачено
 }
+
