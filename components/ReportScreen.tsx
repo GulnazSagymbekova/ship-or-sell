@@ -10,6 +10,7 @@ import { isStale } from "@/lib/staleReport";
 import { useMoveDetails } from "@/hooks/useMoveDetails";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/AppShell";
+import { DeleteMoveButton } from "@/components/DeleteMoveButton";
 import { ErrorState } from "@/components/ErrorState";
 import { EstimateCard } from "@/components/EstimateCard";
 import { LoadingState } from "@/components/LoadingState";
@@ -87,6 +88,10 @@ export function ReportScreen() {
       </section>
 
       {!paid && details.lockedItemIds.length === 0 ? <Paywall moveId={moveId} lockedCount={0} /> : null}
+
+      <div className="flex justify-center border-t pt-4">
+        <DeleteMoveButton moveId={moveId} />
+      </div>
     </div>
   );
 }
