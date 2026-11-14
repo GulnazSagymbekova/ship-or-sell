@@ -20,10 +20,10 @@ const CATEGORIES = Object.keys(CATEGORY_LABEL) as Category[];
 const dim = z.coerce.number<string | number>().positive("> 0").max(300, "Too big");
 
 const schema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(80),
+  name: z.string().trim().min(1, "Name is required").max(120),
   category: z.enum(CATEGORIES as [Category, ...Category[]]),
-  brand: z.string().trim().max(60),
-  material: z.string().trim().max(60),
+  brand: z.string().trim().max(80),
+  material: z.string().trim().min(1, "Material is required").max(80),
   condition: z.number().int().min(1).max(5),
   widthIn: dim,
   depthIn: dim,
@@ -83,7 +83,6 @@ export function ItemEditSheet({
         depthIn: v.depthIn,
         heightIn: v.heightIn,
         sentimental: v.sentimental,
-        userEdited: true,
       });
       onSaved(saved);
     } catch (e) {
@@ -121,7 +120,8 @@ export function ItemEditSheet({
             </div>
             <div className="space-y-2">
               <Label htmlFor="material">Material</Label>
-              <Input id="material" {...form.register("material")} />
+              <Input id="material" aria-invalid={!!errors.material} {...form.register("material")} />
+              {errors.material ? <p className="text-sm text-destructive">{errors.material.message}</p> : null}
             </div>
           </div>
           <div className="space-y-2">

@@ -45,7 +45,12 @@ export function logError(route: string, err: unknown) {
 
 export type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
-/** Пользовательский Supabase-клиент + текущий пользователь, либо готовый 401. */
+/**
+ * Пользовательский Supabase-клиент + текущий пользователь.
+ * Входа по email нет: обычно анонимную сессию уже выдал proxy на /move/*.
+ * Если API вызвали без сессии (например, сразу с лендинга) — создаём анонимную здесь,
+ * куки уйдут в ответ. 401 — только если Supabase не смог выдать сессию.
+ */
 export async function requireUser(): Promise<
   | { ok: true; supabase: SupabaseServerClient; userId: string }
   | { ok: false; response: NextResponse }
@@ -54,8 +59,16 @@ export async function requireUser(): Promise<
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, response: apiError("unauthorized") };
-  return { ok: true, supabase, userId: user.id };
+  if (user) return { ok: true, supabase, userId: user.id };
+
+  const { data, error } = await supabase.auth.signInAnonymously();
+  if (error || !data.user) {
+    if (error) logError("requireUser", error);
+    // Код ошибки Supabase (например anonymous_provider_disabled) — без персональных данных.
+    const reason = error ? `${error.code ?? error.name ?? "auth_error"}: ${String(error.message).slice(0, 120)}` : "no_session";
+    return { ok: false, response: apiError("unauthorized", reason) };
+  }
+  return { ok: true, supabase, userId: data.user.id };
 }
 
 /** JSON-тело через zod. Невалидный JSON или схема → 400. */

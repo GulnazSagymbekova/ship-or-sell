@@ -29,11 +29,13 @@ export interface NewItemInput {
 const LIVE = {
   moves: true, // GET/POST /api/moves, GET/DELETE /api/moves/:id
   upload: true, // POST /api/upload
-  analyze: false, // POST /api/analyze (B2)
-  items: false, // POST /api/items, PATCH/DELETE /api/items/:id (B2)
-  estimate: false, // POST /api/estimate (B3)
-  listings: false, // POST /api/listings (B2)
-  checkout: false, // POST /api/checkout (C)
+  analyze: true, // POST /api/analyze
+  items: true, // POST /api/items, PATCH/DELETE /api/items/:id
+  estimate: false, // POST /api/estimate — not in main yet (needs src/lib/pricing)
+  // The real endpoint exists, but needs real estimates + a real "paid" status,
+  // which only appear once /api/estimate and /api/checkout are live.
+  listings: false,
+  checkout: false, // POST /api/checkout — not in main yet
 } as const;
 
 const live = (k: keyof typeof LIVE) => !USE_MOCKS && LIVE[k];
@@ -96,7 +98,9 @@ const real = {
   checkout: (moveId: string) => request<{ url: string }>("/api/checkout", { method: "POST", body: json({ moveId }) }),
 };
 
-export const api = {
+export const api: {
+  [K in keyof typeof real]: (typeof real)[K];
+} = {
   listMoves: () => (live("moves") ? real.listMoves() : mockApi.listMoves()),
   createMove: (input: MoveInput) => (live("moves") ? real.createMove(input) : mockApi.createMove(input)),
   getMove: async (id: string): Promise<MoveDetails> => {
@@ -118,7 +122,12 @@ export const api = {
   updateItem: (id: string, patch: Partial<Item>) =>
     live("items") ? real.updateItem(id, patch) : mockApi.updateItem(id, patch),
   deleteItem: (id: string) => (live("items") ? real.deleteItem(id) : mockApi.deleteItem(id)),
-  estimate: (moveId: string) => (live("estimate") ? real.estimate(moveId) : mockApi.estimate(moveId)),
+  estimate: async (moveId: string) => {
+    if (live("estimate")) return real.estimate(moveId);
+    // Hybrid: refresh the real move + items first so the mock prices what's on the server.
+    if (live("moves")) await api.getMove(moveId);
+    return mockApi.estimate(moveId);
+  },
   createListing: (itemId: string) => (live("listings") ? real.createListing(itemId) : mockApi.createListing(itemId)),
   checkout: (moveId: string) => (live("checkout") ? real.checkout(moveId) : mockApi.checkout(moveId)),
 };

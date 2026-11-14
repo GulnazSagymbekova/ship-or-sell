@@ -33,6 +33,8 @@ interface Db {
   moves: Move[];
   /** Real moves seen via GET /api/moves/:id (hybrid mode), for pricing. */
   known: Record<string, Move>;
+  /** Real items per move seen via GET /api/moves/:id (hybrid mode). */
+  knownItems: Record<string, Item[]>;
   /** photoPaths uploaded in full-mock mode, per move. */
   photos: Record<string, string[]>;
   items: Item[];
@@ -47,7 +49,7 @@ const localPhotoUrls = new Map<string, string>();
 
 function load(): Db {
   if (db) return db;
-  db = { moves: [], known: {}, photos: {}, items: [], estimates: [], listings: [], paid: [] };
+  db = { moves: [], known: {}, knownItems: {}, photos: {}, items: [], estimates: [], listings: [], paid: [] };
   if (typeof window !== "undefined") {
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
@@ -207,16 +209,23 @@ function findMove(id: string): Move {
 }
 
 function findItem(id: string): Item {
-  const item = load().items.find((i) => i.id === id);
+  const d = load();
+  const item = d.items.find((i) => i.id === id) ?? Object.values(d.knownItems).flat().find((i) => i.id === id);
   if (!item) throw new ApiError("not_found", 404);
   return item;
 }
 
 const isPaid = (moveId: string) => load().paid.includes(moveId);
+/** Items created by the mock (mocked analyze / add). */
 const itemsOf = (moveId: string) => load().items.filter((i) => i.moveId === moveId);
+/** Real items (from the backend) + mock items for a move. */
+const allItemsOf = (moveId: string) => {
+  const real = load().knownItems[moveId] ?? [];
+  return [...real, ...itemsOf(moveId).filter((m) => !real.some((r) => r.id === m.id))];
+};
 
 function estimatesView(moveId: string) {
-  const items = itemsOf(moveId);
+  const items = allItemsOf(moveId);
   const raw = load().estimates.filter((e) => items.some((i) => i.id === e.itemId));
   const { visible, lockedItemIds } = lockFor(isPaid(moveId), raw);
   return {
@@ -236,6 +245,7 @@ function estimatesView(moveId: string) {
 export function overlayDetails(real: MoveDetails): MoveDetails {
   const d = load();
   d.known[real.move.id] = real.move;
+  d.knownItems[real.move.id] = real.items;
   save();
   const mockItems = itemsOf(real.move.id).filter((m) => !real.items.some((r) => r.id === m.id));
   const view = estimatesView(real.move.id);
@@ -257,6 +267,7 @@ export function forgetMove(moveId: string) {
   const ids = new Set(itemsOf(moveId).map((i) => i.id));
   d.moves = d.moves.filter((m) => m.id !== moveId);
   delete d.known[moveId];
+  delete d.knownItems[moveId];
   delete d.photos[moveId];
   d.items = d.items.filter((i) => i.moveId !== moveId);
   d.estimates = d.estimates.filter((e) => !ids.has(e.itemId));
@@ -338,7 +349,7 @@ export const mockApi = {
     findMove(moveId);
     maybeFail("ai_busy");
     const d = load();
-    const existing = itemsOf(moveId).length;
+    const existing = allItemsOf(moveId).length;
     if (existing >= LIMITS.maxItemsPerMove) {
       throw new ApiError("rate_limited", 429, `Up to ${LIMITS.maxItemsPerMove} items per move`);
     }
@@ -399,7 +410,7 @@ export const mockApi = {
     await jitter(800, 1400);
     const d = load();
     const move = findMove(moveId);
-    const items = itemsOf(moveId);
+    const items = allItemsOf(moveId);
     const ids = new Set(items.map((i) => i.id));
     const raw = items.map((i) => priceItem(move, i));
     d.estimates = [...d.estimates.filter((e) => !ids.has(e.itemId)), ...raw];

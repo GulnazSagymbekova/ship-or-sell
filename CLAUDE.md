@@ -17,7 +17,7 @@ AI распознаёт каждую вещь. По каждой вещи счи
 ## Стек
 
 - Next.js 16 (App Router; в репо next@16.4.6 — см. AGENTS.md) + TypeScript + Tailwind + shadcn/ui
-- Supabase: Postgres, Auth (magic link), Storage
+- Supabase: Postgres, Auth (анонимный вход — без email и страницы /login), Storage
 - Drizzle ORM
 - Claude API (`claude-sonnet-5-5`)
 - Stripe Checkout (test mode)
@@ -122,7 +122,6 @@ export interface MoveDetails {
 | POST | `/api/listings` | `{ itemId }` | `Listing` |
 | POST | `/api/checkout` | `{ moveId }` | `{ url }` |
 | POST | `/api/stripe/webhook` | событие Stripe | `200` |
-| GET | `/auth/callback` | `?code=` от magic link | редирект на `next` или `/move` |
 
 Общие правила: чужой или несуществующий id → `404` (не `403`); ошибка валидации → `400`; превышен лимит → `429`.
 
@@ -174,7 +173,7 @@ export interface MoveDetails {
 | `estimateMove(move, items): Estimate[]` в `src/lib/pricing` — чистая функция, учитывает `sentimental` | C | B (`/api/estimate`) |
 | Все API-роуты, схема, RLS, AI-модули | B | A |
 | Stripe Checkout (`/api/checkout`), $19, `metadata.moveId`, success_url → `/move/{id}/success` | C | A |
-| Экраны, моки по типам выше, `/login` | A | — |
+| Экраны, моки по типам выше | A | — |
 | Stripe webhook | B + C | — |
 
 ## Структура репозитория

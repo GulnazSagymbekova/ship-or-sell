@@ -1,0 +1,4 @@
+[
+  { "category": "dresser", "name": "6-drawer white dresser", "brand": "IKEA HEMNES", "material": "solid pine", "condition": 3, "widthIn": 63, "depthIn": 20, "heightIn": 37, "volumeCuFt": 30, "weightLb": 150, "aiConfidence": 0.85 },
+  { "category": "nightstand", "name": "White 2-drawer nightstand", "brand": null, "material": "particleboard", "condition": 3, "widthIn": 18, "depthIn": 16, "heightIn": 24, "volumeCuFt": 5, "weightLb": 25, "aiConfidence": 0.8 }
+]
