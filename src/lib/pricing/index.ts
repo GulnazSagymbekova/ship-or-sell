@@ -23,7 +23,7 @@ import defaultsJson from "@/data/category-defaults.json";
 export const DEFAULT_DISTANCE_MI = 1000;
 
 /** Межштатные мувинговые компании считают ~7 фунтов на кубический фут. */
-const LB_PER_CUFT = 7;
+export const LB_PER_CUFT = 7;
 
 interface ShipRate {
   /** $ за единицу (фунт или куб. фут) = base + perMile × мили */
@@ -34,7 +34,7 @@ interface ShipRate {
   unit: "lb" | "cuft";
 }
 
-const SHIP_RATES: Record<MoveType, ShipRate> = {
+export const SHIP_RATES: Record<MoveType, ShipRate> = {
   // Межштатный мувер: ~$0.75/фунт на 1000 миль, ~$1.20 на 2000.
   full_service: { base: 0.3, perMile: 0.00045, handling: 15, unit: "lb" },
   // PODS-подобный контейнер: ~$3.7/куб. фут на 1000 миль.
@@ -240,7 +240,7 @@ export function materialRule(material: string | null | undefined): { retail: num
   return DEFAULT_MATERIAL;
 }
 
-function itemVolume(item: Item): number {
+export function itemVolume(item: Item): number {
   if (positive(item.volumeCuFt)) return item.volumeCuFt;
   if (positive(item.widthIn) && positive(item.depthIn) && positive(item.heightIn)) {
     return packedVolume(item.widthIn, item.depthIn, item.heightIn);
@@ -249,12 +249,12 @@ function itemVolume(item: Item): number {
   return packedVolume(d.widthIn, d.depthIn, d.heightIn);
 }
 
-function itemWeight(item: Item): number {
+export function itemWeight(item: Item): number {
   if (positive(item.weightLb)) return item.weightLb;
   return dimsFor(item.category).weightLb;
 }
 
-function moveDistance(move: Move): number {
+export function moveDistance(move: Move): number {
   return positive(move.distanceMi) ? move.distanceMi : move.distanceMi === 0 ? 0 : DEFAULT_DISTANCE_MI;
 }
 

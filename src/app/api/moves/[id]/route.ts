@@ -3,7 +3,8 @@ import type { MoveDetails } from "@/types";
 import { apiError, isUuid, logError, notFound, requireUser } from "@/lib/http";
 import { ITEM_COLUMNS, MOVE_COLUMNS, toItem, toMove } from "@/lib/db/mappers";
 import { loadEstimates, loadListings } from "@/lib/db/estimates";
-import { applyPaywall } from "@/lib/paywall";
+import { applyPaywall, applyPlanPaywall } from "@/lib/paywall";
+import { planMove } from "@/lib/pricing/plan";
 import { getSignedPhotoUrls, PHOTO_BUCKET } from "@/lib/storage";
 import { cityForZip } from "@/lib/zips";
 
@@ -49,6 +50,14 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 
     const paywalled =
       fullEstimates.length > 0 ? applyPaywall(move, fullEstimates, items) : null;
+    // v2: план по полным цифрам, скрытие — applyPlanPaywall. null, пока оценок нет.
+    const plan = paywalled
+      ? applyPlanPaywall(
+          planMove(move, items, fullEstimates, new Date().toISOString().slice(0, 10)),
+          paywalled.lockedItemIds,
+          move.status === "paid",
+        )
+      : null;
 
     const body: MoveDetails = {
       move,
@@ -60,6 +69,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
       lockedItemIds: paywalled?.lockedItemIds ?? [],
       summary: paywalled?.summary ?? null,
       listings,
+      plan,
     };
     return NextResponse.json(body);
   } catch (err) {

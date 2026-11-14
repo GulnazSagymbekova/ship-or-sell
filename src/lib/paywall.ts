@@ -1,4 +1,4 @@
-import type { Estimate, Item, Move, MoveSummary } from "@/types";
+import type { Estimate, Item, Move, MovePlan, MoveSummary } from "@/types";
 
 /** Сколько вещей с наибольшей экономией показываем бесплатно. */
 export const FREE_ITEMS = 3;
@@ -57,4 +57,14 @@ export function applyPaywall(
     return { ...e, shipCost: 0, resaleLow: 0, resaleHigh: 0, replaceCost: 0, savings: 0 };
   });
   return { estimates: out, lockedItemIds, summary };
+}
+
+/**
+ * v2: скрытие плана. Если не оплачено — из plan.items убираем вещи из lockedItemIds,
+ * tips = []. Агрегаты (vehicle, cash*, freedCash) остаются — это бесплатный «крючок».
+ */
+export function applyPlanPaywall(plan: MovePlan, lockedItemIds: string[], paid: boolean): MovePlan {
+  if (paid) return plan;
+  const locked = new Set(lockedItemIds);
+  return { ...plan, items: plan.items.filter((i) => !locked.has(i.itemId)), tips: [] };
 }
