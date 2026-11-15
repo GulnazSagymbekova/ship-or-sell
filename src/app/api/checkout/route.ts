@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   if (!body.ok) return body.response;
   const { moveId } = body.data;
   const plan = body.data.plan ?? "pass";
-  // Невалидный id трактуем как несуществующий (см. CLAUDE.md: чужой/несуществующий → 404).
+  // Невалидный id трактуем как несуществующий (см. CONTEXT.md: чужой/несуществующий → 404).
   if (!isUuid(moveId)) return notFound();
 
   try {

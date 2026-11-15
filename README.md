@@ -226,8 +226,13 @@ npm run dev                  # http://localhost:3000
 | `STRIPE_SECRET_KEY` | Stripe Dashboard (test mode) → Developers → API keys |
 | `STRIPE_WEBHOOK_SECRET` | `stripe listen --forward-to localhost:3000/api/stripe/webhook` |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` |
+| `AI_DAILY_LIMIT` | лимит вызовов Claude в сутки на весь сервис, по умолчанию `500` |
+| `DEMO_FALLBACK` | `true` — заготовленные ответы, если Claude недоступен (на проде включено) |
+| `HOME_PLUS_BILLING` | `true` — настоящая подписка Home+ в Stripe, иначе кнопка waitlist |
 
-Миграции из `supabase/migrations/` применяются в Supabase SQL Editor по порядку. В Supabase нужно включить **Anonymous sign-ins**.
+Миграции из `supabase/migrations/` (`0001_init`, `0002_storage`, `0003_home_plus`) применяются в Supabase SQL Editor по порядку. В Supabase нужно включить **Anonymous sign-ins**.
+
+Для подписки Home+ в Stripe (test mode): webhook должен получать `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.payment_failed`; Customer Portal сохранён в Settings → Billing → Customer portal.
 
 Без бэкенда фронтенд работает на моках: `NEXT_PUBLIC_USE_MOCKS=true`.
 
@@ -256,6 +261,8 @@ src/
 supabase/migrations/   SQL-схема, RLS, Storage
 tests/                 юнит-тесты (node:test + tsx)
 docs/                  метрики, источники данных, сценарий питча
+CONTEXT.md             правила и контракт для AI-ассистентов (вставлять в начало сессии)
+AGENTS.md              особенности Next.js 16 для AI-ассистентов
 ```
 
 ## Команда
