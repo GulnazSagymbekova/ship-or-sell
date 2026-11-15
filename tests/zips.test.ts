@@ -21,4 +21,10 @@ describe("zips.json", () => {
     const nyToAustin = distanceMiBetween("10001", "78701");
     assert.ok(nyToAustin !== null && nyToAustin > 1700 && nyToAustin < 2100, String(nyToAustin));
   });
+
+  it("company-only ZIPs show the real city, not the company", () => {
+    assert.equal(cityForZip("11255"), "Brooklyn"); // was "Ny Telephone"
+    assert.equal(cityForZip("35225"), "Birmingham"); // was "Bham"
+    assert.equal(cityForZip("94138"), "San Francisco"); // was "Wells Fargo Bank"
+  });
 });
