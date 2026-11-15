@@ -4,6 +4,8 @@
 
 Прод: **https://ship-or-sell.vercel.app** · Stripe в test mode · B2C, веб (mobile-first), пользователи — взрослые в США.
 
+Проект выполнен командой **ENUshnitsy** для **Business Cup 2.0**.
+
 ---
 
 ## 1. Боль, которую мы закрываем
@@ -267,6 +269,10 @@ AGENTS.md              особенности Next.js 16 для AI-ассист�
 
 ## Команда
 
-- **A** — фронтенд и демо
-- **B** — AI и бэкенд
-- **C** — финансовая логика, данные, Stripe, питч
+**ENUshnitsy** · Business Cup 2.0
+
+| Участник | Роль |
+|---|---|
+| **Gulnaz Sagymbekova** (капитан) | B — AI и бэкенд |
+| **Adina Bekbolat** | A — фронтенд и демо |
+| **Myktybaev Nurmukhammet Khanafiaevich** | C — финансовая логика, данные, Stripe, питч |
