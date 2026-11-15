@@ -13,7 +13,7 @@ export const MOVE_TYPE_LABEL: Record<MoveType, string> = Object.fromEntries(
 export const MOVE_STATUS_LABEL: Record<MoveStatus, string> = {
   draft: "Draft",
   analyzing: "Analyzing",
-  analyzed: "Ready to review",
+  analyzed: "Report ready",
   paid: "Unlocked",
 };
 

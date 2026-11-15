@@ -13,7 +13,10 @@ export function explain(item: Item, e: Estimate, toCity: string | null, locked: 
         : `Selling now and rebuying in ${city} saves you ${usd.format(e.savings)}`;
     case "SHIP":
       return `Cheaper to bring it than to replace it in ${city}`;
-    case "TOSSUP":
-      return "It's close — shipping and replacing cost about the same.";
+    case "TOSSUP": {
+      // Сравниваем перевозку с «продать здесь и купить там» (замена минус выручка), а не с ценой замены.
+      const swap = Math.max(0, e.replaceCost - Math.round((e.resaleLow + e.resaleHigh) / 2));
+      return `It's close: shipping is ${usd.format(e.shipCost)}, selling here and rebuying in ${city} nets out to about ${usd.format(swap)}.`;
+    }
   }
 }

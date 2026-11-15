@@ -8,10 +8,6 @@ function signed(n: number, sign: "+" | "−") {
   return n === 0 ? usd.format(0) : `${sign}${usd.format(Math.abs(n))}`;
 }
 
-function net(n: number) {
-  return n >= 0 ? `+${usd.format(n)}` : `−${usd.format(Math.abs(n))}`;
-}
-
 /**
  * Top of the report (v2): the whole-move plan. Headline is cash freed vs. shipping everything,
  * then the vehicle you actually need and a 4-step cash timeline. All figures come from the
@@ -86,11 +82,11 @@ export function PlanCard({
       </ol>
 
       <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-white/20 pt-3">
-        <span className="text-sm font-medium">Net cost of your move</span>
+        <span className="text-sm font-medium">{plan.netCash < 0 ? "Your move costs you" : "Your move leaves you"}</span>
         <span className="text-right">
-          <span className="block text-lg font-bold tabular-nums">{net(plan.netCash)}</span>
+          <span className="block text-lg font-bold tabular-nums">{usd.format(Math.abs(plan.netCash))}</span>
           <span className="block text-xs tabular-nums opacity-75">
-            vs. {net(plan.netCashIfShipAll)} if you ship everything
+            vs. {usd.format(Math.abs(plan.netCashIfShipAll))} if you ship everything
           </span>
         </span>
       </div>
