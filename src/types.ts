@@ -1,4 +1,4 @@
-// Контракт данных. Не менять без согласования с командой (см. CLAUDE.md).
+// Контракт данных. Не менять без согласования с командой (см. CONTEXT.md).
 
 export type MoveType = "diy_truck" | "container" | "full_service";
 export type MoveStatus = "draft" | "analyzing" | "analyzed" | "paid";
