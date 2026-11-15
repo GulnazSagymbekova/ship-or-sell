@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { planMove, saleOutlook, vehicleCost } from "@/lib/pricing/plan";
+import { planMove, saleOutlook, vehicleCost, vehicleLoad } from "@/lib/pricing/plan";
 import { applyPlanPaywall } from "@/lib/paywall";
 import type { Category, Estimate, Item, Move } from "@/types";
 
@@ -97,6 +97,20 @@ describe("vehicleCost", () => {
     const m = move({ moveType: "container" });
     assert.equal(vehicleCost(m, 400, 0, 5).label, "1 container");
     assert.equal(vehicleCost(m, 600, 0, 5).label, "2 containers");
+  });
+});
+
+describe("vehicleLoad", () => {
+  it("matches the truck vehicleCost picks and counts boxes", () => {
+    const items = [item({ volumeCuFt: 100 }), item({ volumeCuFt: 50 })];
+    const load = vehicleLoad(move(), items)!;
+    assert.equal(load.label, vehicleCost(move(), 150, 0, 2).label);
+    assert.equal(load.usedCuFt, 250); // 150 мебели + 100 коробок (минимум)
+    assert.equal(load.capacityCuFt, 402);
+  });
+
+  it("is null for full service (priced by weight)", () => {
+    assert.equal(vehicleLoad(move({ moveType: "full_service" }), [item()]), null);
   });
 });
 

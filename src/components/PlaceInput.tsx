@@ -71,6 +71,11 @@ export function PlaceInput({ id, value, onChange, placeholder, invalid }: PlaceI
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Enter в поле места никогда не отправляет всю анкету (иначе красные ошибки в пустых полях).
+    if (e.key === "Enter" && (!open || options.length === 0)) {
+      e.preventDefault();
+      return;
+    }
     if (!open || options.length === 0) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();

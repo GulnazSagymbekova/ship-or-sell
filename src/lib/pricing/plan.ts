@@ -165,6 +165,32 @@ export function vehicleCost(move: Move, volumeCuFt: number, weightLb: number, it
   };
 }
 
+/**
+ * Насколько заполнен транспорт (для полоски в UI): занятый объём (мебель + коробки) и вместимость
+ * текущей ступени. Только для грузовика и контейнера; full service считают по весу → null.
+ */
+export function vehicleLoad(
+  move: Move,
+  items: Item[],
+): { label: string; usedCuFt: number; capacityCuFt: number } | null {
+  const furniture = items.reduce((sum, i) => sum + itemVolume(i), 0);
+  const used = furniture + Math.max(BOXES_MIN_CUFT, BOXES_SHARE * furniture);
+  if (move.moveType === "diy_truck") {
+    const truck = TRUCKS.find((t) => used <= t.capacityCuFt);
+    if (!truck) return null; // несколько грузовиков — полоска не имеет смысла
+    return { label: truck.label, usedCuFt: Math.round(used), capacityCuFt: truck.capacityCuFt };
+  }
+  if (move.moveType === "container") {
+    const n = Math.max(1, Math.ceil(used / CONTAINER_CUFT));
+    return {
+      label: n === 1 ? "1 container" : `${n} containers`,
+      usedCuFt: Math.round(used),
+      capacityCuFt: n * CONTAINER_CUFT,
+    };
+  }
+  return null;
+}
+
 function vehicleFor(move: Move, items: Item[]): Vehicle {
   let volume = 0;
   let weight = 0;
