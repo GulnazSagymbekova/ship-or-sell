@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Sparkles, Tag } from "lucide-react";
 import { toast } from "sonner";
-import type { Estimate, Item, PlanAction, PlanItem } from "@/types";
+import type { Estimate, Item, Move, MovePlan, PlanAction, PlanItem } from "@/types";
+import { vehicleLoad } from "@/lib/pricing/plan";
 import { isStale } from "@/client/staleReport";
 import { useMoveDetails } from "@/hooks/useMoveDetails";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ export function ReportScreen() {
   const plan = details.plan ?? null;
   const cash = plan ? plan.freedCash : details.summary.totalSavings;
   const route = [details.fromCity ?? details.move.fromZip, details.toCity ?? details.move.toZip].join(" → ");
+  const load = plan ? truckLoad(details.move, details.items, plan) : null;
 
   return (
     <div className="space-y-6">
@@ -59,7 +61,7 @@ export function ReportScreen() {
           </Link>
         </Button>
         <PageTitle title={plan ? "Your move plan" : "Your report"} subtitle={route} />
-        {plan ? <PlanCard plan={plan} /> : <SummaryCard summary={details.summary} />}
+        {plan ? <PlanCard plan={plan} load={load} /> : <SummaryCard summary={details.summary} />}
       </div>
 
       {plan ? <SmartMoveCard plan={plan} paid={paid} /> : null}
@@ -197,4 +199,14 @@ function PlanGroups({
       ) : null}
     </div>
   );
+}
+
+/**
+ * Truck/container fill for the plan card. Items the plan doesn't ship are left out; locked items
+ * (not in plan.items before payment) count as shipped. Hidden if that guess lands on another vehicle.
+ */
+function truckLoad(move: Move, items: Item[], plan: MovePlan) {
+  const notShipped = new Set(plan.items.filter((p) => p.action !== "ship").map((p) => p.itemId));
+  const load = vehicleLoad(move, items.filter((i) => !notShipped.has(i.id)));
+  return load && load.label === plan.vehicle ? load : null;
 }

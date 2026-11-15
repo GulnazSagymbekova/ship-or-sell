@@ -17,7 +17,14 @@ function net(n: number) {
  * then the vehicle you actually need and a 4-step cash timeline. All figures come from the
  * server's MovePlan; aggregates are shown even before payment (that's the free hook).
  */
-export function PlanCard({ plan }: { plan: MovePlan }) {
+export function PlanCard({
+  plan,
+  load,
+}: {
+  plan: MovePlan;
+  /** How full the truck/container is (cu ft incl. boxes); null for full service or when unknown. */
+  load?: { usedCuFt: number; capacityCuFt: number } | null;
+}) {
   const freed = plan.freedCash;
   const rent = weeksOfRent(freed);
   const smaller = plan.vehicle !== plan.vehicleIfShipAll;
@@ -42,7 +49,13 @@ export function PlanCard({ plan }: { plan: MovePlan }) {
           </p>
         </>
       ) : (
-        <h2 className="mt-1 text-3xl leading-tight font-bold tracking-tight">Shipping everything is your best plan</h2>
+        <>
+          <h2 className="mt-1 text-3xl leading-tight font-bold tracking-tight">Shipping everything is your best plan</h2>
+          <p className="mt-2 text-sm opacity-90">
+            You pay for the whole {plan.vehicle.replace(/^~?[\d,]+ lb /, "")}, not per item. Selling only saves money
+            when it gets you a smaller one — with these items it doesn&apos;t, so keep them.
+          </p>
+        </>
       )}
 
       <p className="mt-3 flex items-center gap-2 rounded-lg bg-white/15 px-3 py-2 text-sm font-medium">
@@ -55,6 +68,7 @@ export function PlanCard({ plan }: { plan: MovePlan }) {
           <span>{plan.vehicle}</span>
         )}
       </p>
+      {load ? <LoadBar used={load.usedCuFt} capacity={load.capacityCuFt} /> : null}
 
       <ol className="mt-4 space-y-1.5 text-sm">
         {steps.map((s) => (
@@ -92,6 +106,24 @@ export function PlanCard({ plan }: { plan: MovePlan }) {
         </p>
       ) : null}
     </section>
+  );
+}
+
+/** Fill level of the truck/container: furniture + boxes vs. capacity. */
+function LoadBar({ used, capacity }: { used: number; capacity: number }) {
+  const pct = Math.min(100, Math.round((used / capacity) * 100));
+  return (
+    <div className="mt-2 px-1" aria-label={`Truck about ${pct}% full`}>
+      <div className="h-2 overflow-hidden rounded-full bg-white/20">
+        <div className="h-full rounded-full bg-white" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-1 flex justify-between text-xs opacity-80 tabular-nums">
+        <span>~{pct}% full</span>
+        <span>
+          {used.toLocaleString("en-US")} of {capacity.toLocaleString("en-US")} cu ft, boxes included
+        </span>
+      </p>
+    </div>
   );
 }
 
