@@ -5,7 +5,7 @@ import { ListingsScreen } from "@/components/ListingsScreen";
 
 export default function ListingsPage() {
   return (
-    <AppShell>
+    <AppShell width="wide">
       <Suspense fallback={<LoadingState rows={3} />}>
         <ListingsScreen />
       </Suspense>

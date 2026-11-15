@@ -53,90 +53,94 @@ export function ReportScreen() {
   const load = plan ? truckLoad(details.move, details.items, plan) : null;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <Button asChild variant="ghost" size="sm" className="-ml-3 mb-1 text-muted-foreground">
-          <Link href={`/move/${moveId}`}>
-            <ArrowLeft /> Edit items
-          </Link>
-        </Button>
-        <PageTitle title={plan ? "Your move plan" : "Your report"} subtitle={route} />
-        {plan ? <PlanCard plan={plan} load={load} /> : <SummaryCard summary={details.summary} />}
-      </div>
-
-      {plan ? <SmartMoveCard plan={plan} paid={paid} /> : null}
-
-      {paid ? (
-        <div className="space-y-2">
-          <Button asChild size="lg" className="w-full">
-            <Link href={`/move/${moveId}/listings`}>
-              <Tag /> Get Marketplace listings
+    <div className="space-y-6 lg:grid lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:space-y-0">
+      <aside className="space-y-6">
+        <div>
+          <Button asChild variant="ghost" size="sm" className="-ml-3 mb-1 text-muted-foreground">
+            <Link href={`/move/${moveId}`}>
+              <ArrowLeft /> Edit items
             </Link>
           </Button>
-          {details.tier === "pro" ? (
-            <Button asChild size="lg" variant="outline" className="w-full">
-              <Link href={`/move/${moveId}/pro`}>
-                <Sparkles className="text-amber-500" /> Open Move Pro: budget, mover check, inventory
+          <PageTitle title={plan ? "Your move plan" : "Your report"} subtitle={route} />
+          {plan ? <PlanCard plan={plan} load={load} /> : <SummaryCard summary={details.summary} />}
+        </div>
+
+        {plan ? <SmartMoveCard plan={plan} paid={paid} /> : null}
+
+        {paid ? (
+          <div className="space-y-2">
+            <Button asChild size="lg" className="w-full">
+              <Link href={`/move/${moveId}/listings`}>
+                <Tag /> Get Marketplace listings
               </Link>
             </Button>
-          ) : null}
-        </div>
-      ) : null}
+            {details.tier === "pro" ? (
+              <Button asChild size="lg" variant="outline" className="w-full">
+                <Link href={`/move/${moveId}/pro`}>
+                  <Sparkles className="text-amber-500" /> Open Move Pro: budget, mover check, inventory
+                </Link>
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
+      </aside>
 
-      {plan ? (
-        <PlanGroups
-          rows={rows}
-          planItems={plan.items}
-          paywall={
-            !paid && details.lockedItemIds.length > 0 ? (
-              <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} summary={details.summary} cash={cash} />
-            ) : null
-          }
-          card={(r) => (
-            <EstimateCard
-              item={r.item}
-              estimate={r.e}
-              photoUrl={details.photoUrls[r.item.photoPath]}
-              toCity={details.toCity}
-              locked={r.locked}
-              planItem={r.planItem}
-              onPhotoError={refreshPhotos}
-            />
-          )}
-        />
-      ) : (
-        <section className="space-y-3">
-          <h2 className="text-sm font-medium text-muted-foreground">Item by item</h2>
-          {rows.map(({ e, item, locked }, i) => (
-            <div key={item.id}>
-              {!paid && locked && (i === 0 || !rows[i - 1].locked) ? (
-                <div className="mb-3">
-                  <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} summary={details.summary} />
-                </div>
-              ) : null}
+      <div className="space-y-6">
+        {plan ? (
+          <PlanGroups
+            rows={rows}
+            planItems={plan.items}
+            paywall={
+              !paid && details.lockedItemIds.length > 0 ? (
+                <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} summary={details.summary} cash={cash} />
+              ) : null
+            }
+            card={(r) => (
               <EstimateCard
-                item={item}
-                estimate={e}
-                photoUrl={details.photoUrls[item.photoPath]}
+                item={r.item}
+                estimate={r.e}
+                photoUrl={details.photoUrls[r.item.photoPath]}
                 toCity={details.toCity}
-                locked={locked}
+                locked={r.locked}
+                planItem={r.planItem}
                 onPhotoError={refreshPhotos}
               />
-            </div>
-          ))}
-        </section>
-      )}
+            )}
+          />
+        ) : (
+          <section className="space-y-3">
+            <h2 className="text-sm font-medium text-muted-foreground">Item by item</h2>
+            {rows.map(({ e, item, locked }, i) => (
+              <div key={item.id}>
+                {!paid && locked && (i === 0 || !rows[i - 1].locked) ? (
+                  <div className="mb-3">
+                    <Paywall moveId={moveId} lockedCount={details.lockedItemIds.length} summary={details.summary} />
+                  </div>
+                ) : null}
+                <EstimateCard
+                  item={item}
+                  estimate={e}
+                  photoUrl={details.photoUrls[item.photoPath]}
+                  toCity={details.toCity}
+                  locked={locked}
+                  onPhotoError={refreshPhotos}
+                />
+              </div>
+            ))}
+          </section>
+        )}
 
-      {!paid && details.lockedItemIds.length === 0 ? (
-        <Paywall moveId={moveId} lockedCount={0} summary={details.summary} cash={cash} />
-      ) : null}
+        {!paid && details.lockedItemIds.length === 0 ? (
+          <Paywall moveId={moveId} lockedCount={0} summary={details.summary} cash={cash} />
+        ) : null}
 
-      {paid && details.tier === "pass" ? <UpgradeToPro moveId={moveId} /> : null}
+        {paid && details.tier === "pass" ? <UpgradeToPro moveId={moveId} /> : null}
 
-      {paid ? <SaveInventoryCard moveId={moveId} /> : null}
+        {paid ? <SaveInventoryCard moveId={moveId} /> : null}
 
-      <div className="flex justify-center border-t pt-4">
-        <DeleteMoveButton moveId={moveId} />
+        <div className="flex justify-center border-t pt-4">
+          <DeleteMoveButton moveId={moveId} />
+        </div>
       </div>
     </div>
   );
@@ -180,9 +184,11 @@ function PlanGroups({
               </h2>
               <p className="text-xs text-muted-foreground">{g.hint}</p>
             </div>
-            {list.map((r) => (
-              <div key={r.item.id}>{card({ ...r, planItem: byId.get(r.item.id) })}</div>
-            ))}
+            <div className="grid gap-3">
+              {list.map((r) => (
+                <div key={r.item.id}>{card({ ...r, planItem: byId.get(r.item.id) })}</div>
+              ))}
+            </div>
           </section>
         );
       })}
@@ -192,9 +198,11 @@ function PlanGroups({
           <h2 className="text-sm font-semibold">
             More items <span className="font-normal text-muted-foreground">· {locked.length}</span>
           </h2>
-          {locked.map((r) => (
-            <div key={r.item.id}>{card(r)}</div>
-          ))}
+          <div className="grid gap-3">
+            {locked.map((r) => (
+              <div key={r.item.id}>{card(r)}</div>
+            ))}
+          </div>
         </section>
       ) : null}
     </div>

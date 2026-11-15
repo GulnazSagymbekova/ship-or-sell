@@ -43,7 +43,7 @@ export function PhotoSection({
           src={src}
           alt=""
           onError={onImgError}
-          className={`aspect-[4/3] w-full bg-muted object-cover ${busy ? "opacity-70" : ""}`}
+          className={`aspect-[4/3] w-full bg-muted object-cover lg:aspect-[16/10] ${busy ? "opacity-70" : ""}`}
         />
         {status === "analyzing" ? (
           <div className="absolute inset-x-0 top-0 h-1 overflow-hidden bg-primary/20">

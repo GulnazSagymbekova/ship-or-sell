@@ -5,7 +5,7 @@ import { LoadingState } from "@/components/LoadingState";
 
 export default function HomePage() {
   return (
-    <AppShell>
+    <AppShell width="wide">
       <Suspense fallback={<LoadingState rows={4} />}>
         <HomeScreen />
       </Suspense>

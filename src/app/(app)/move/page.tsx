@@ -3,7 +3,7 @@ import { MoveList } from "@/components/MoveList";
 
 export default function MovesPage() {
   return (
-    <AppShell>
+    <AppShell width="wide">
       <PageTitle title="My moves" />
       <MoveList />
     </AppShell>

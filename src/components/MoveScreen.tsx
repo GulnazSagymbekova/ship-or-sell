@@ -134,21 +134,23 @@ export function MoveScreen() {
           <h2 className="text-sm font-medium text-muted-foreground">
             {itemCount} item{itemCount === 1 ? "" : "s"} · {photoCount} photo{photoCount === 1 ? "" : "s"}
           </h2>
-          {sections.map((s) => (
-            <PhotoSection
-              key={s.key}
-              src={s.src}
-              entry={s.entry}
-              items={s.items}
-              onImgError={s.entry ? undefined : refreshPhotos}
-              onRetry={s.entry ? () => pipeline.retry(s.entry!.id) : undefined}
-              onRemove={s.entry ? () => pipeline.remove(s.entry!.id) : undefined}
-              onAdd={s.photoPath ? () => setAddingTo(s.photoPath) : undefined}
-              onEdit={setEditing}
-              onDelete={remove}
-              onToggleSentimental={toggleSentimental}
-            />
-          ))}
+          <div className="grid items-start gap-6 lg:grid-cols-2">
+            {sections.map((s) => (
+              <PhotoSection
+                key={s.key}
+                src={s.src}
+                entry={s.entry}
+                items={s.items}
+                onImgError={s.entry ? undefined : refreshPhotos}
+                onRetry={s.entry ? () => pipeline.retry(s.entry!.id) : undefined}
+                onRemove={s.entry ? () => pipeline.remove(s.entry!.id) : undefined}
+                onAdd={s.photoPath ? () => setAddingTo(s.photoPath) : undefined}
+                onEdit={setEditing}
+                onDelete={remove}
+                onToggleSentimental={toggleSentimental}
+              />
+            ))}
+          </div>
         </div>
       ) : null}
 

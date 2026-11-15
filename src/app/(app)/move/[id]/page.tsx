@@ -5,7 +5,7 @@ import { MoveScreen } from "@/components/MoveScreen";
 
 export default function MovePage() {
   return (
-    <AppShell>
+    <AppShell width="wide">
       <Suspense fallback={<LoadingState rows={3} />}>
         <MoveScreen />
       </Suspense>
