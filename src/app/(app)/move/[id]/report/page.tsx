@@ -5,7 +5,7 @@ import { ReportScreen } from "@/components/ReportScreen";
 
 export default function ReportPage() {
   return (
-    <AppShell>
+    <AppShell width="wide">
       <Suspense fallback={<LoadingState rows={4} />}>
         <ReportScreen />
       </Suspense>

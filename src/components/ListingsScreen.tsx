@@ -118,20 +118,22 @@ export function ListingsScreen() {
           }
         />
       ) : (
-        rows.map(({ item, tossup }) => (
-          <ListingCard
-            key={item.id}
-            item={item}
-            tossup={tossup}
-            moveDate={details.move.moveDate}
-            sellBy={details.plan?.items.find((p) => p.itemId === item.id)?.sellBy ?? null}
-            listing={listings[item.id] ?? null}
-            error={errors[item.id] ?? null}
-            photoUrl={details.photoUrls[item.photoPath]}
-            onRetry={() => retry(item)}
-            onPhotoError={refreshPhotos}
-          />
-        ))
+        <div className="grid items-start gap-6 lg:grid-cols-2">
+          {rows.map(({ item, tossup }) => (
+            <ListingCard
+              key={item.id}
+              item={item}
+              tossup={tossup}
+              moveDate={details.move.moveDate}
+              sellBy={details.plan?.items.find((p) => p.itemId === item.id)?.sellBy ?? null}
+              listing={listings[item.id] ?? null}
+              error={errors[item.id] ?? null}
+              photoUrl={details.photoUrls[item.photoPath]}
+              onRetry={() => retry(item)}
+              onPhotoError={refreshPhotos}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
