@@ -36,14 +36,14 @@ export function PhotoSection({
   const canRemove = entry && !entry.photoPath && (status === "queued" || status === "error");
 
   return (
-    <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
-      <div className="relative">
+    <section className="overflow-hidden rounded-xl border bg-card shadow-sm lg:grid lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:overflow-visible">
+      <div className="relative lg:sticky lg:top-20 lg:self-start lg:p-4 lg:pr-0">
         {/* eslint-disable-next-line @next/next/no-img-element -- blob preview or signed URL */}
         <img
           src={src}
           alt=""
           onError={onImgError}
-          className={`aspect-[4/3] w-full bg-muted object-cover lg:aspect-[16/10] ${busy ? "opacity-70" : ""}`}
+          className={`aspect-[4/3] w-full bg-muted object-cover lg:rounded-lg ${busy ? "opacity-70" : ""}`}
         />
         {status === "analyzing" ? (
           <div className="absolute inset-x-0 top-0 h-1 overflow-hidden bg-primary/20">
@@ -55,14 +55,14 @@ export function PhotoSection({
             type="button"
             onClick={onRemove}
             aria-label="Remove photo"
-            className="absolute top-2 right-2 grid size-10 place-items-center rounded-full bg-background/90 shadow"
+            className="absolute top-2 right-2 grid lg:top-6 lg:right-2 size-10 place-items-center rounded-full bg-background/90 shadow"
           >
             <X className="size-4" />
           </button>
         ) : null}
       </div>
 
-      <div className="space-y-2 p-3">
+      <div className="space-y-2 p-3 lg:p-4">
         {busy ? (
           <p className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
             <Loader2 className="size-4 animate-spin text-primary" />

@@ -54,7 +54,7 @@ export function ReportScreen() {
 
   return (
     <div className="space-y-6 lg:grid lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:space-y-0">
-      <aside className="space-y-6">
+      <aside className="space-y-6 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:-ml-3 lg:overflow-y-auto lg:pl-3 lg:pr-1 lg:pb-4 lg:[scrollbar-width:thin]">
         <div>
           <Button asChild variant="ghost" size="sm" className="-ml-3 mb-1 text-muted-foreground">
             <Link href={`/move/${moveId}`}>
