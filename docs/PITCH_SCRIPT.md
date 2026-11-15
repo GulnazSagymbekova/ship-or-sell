@@ -1,158 +1,157 @@
-# Ship-or-Sell — pitch script (3 minutes) and jury Q&A
+# Ship-or-Sell — сценарий питча (3 минуты) и ответы жюри
 
-Презентация (на английском): https://claude.ai/artifact/P3yXgshDhd3jSzE9nACaWF — 11 основных слайдов + 3 запасных для вопросов.
-Текст речи каждого слайда также лежит в заметках докладчика. **Речь и ответы жюри — на английском**, подготовка — на русском.
+Презентация (слайды на английском): https://claude.ai/artifact/P3yXgshDhd3jSzE9nACaWF — 11 основных слайдов + 3 запасных для вопросов.
 
 ---
 
 ## 0. Три правила, которые выигрывают хакатоны
 
-1. **Первые 10 секунд — история, а не «hello, we are team…».** Жюри решает, слушать ли вас, в начале.
-2. **Живое демо важнее слайдов.** Рабочий продукт с оплатой — главный козырь. Слайды только подводят к нему.
+1. **Первые 10 секунд — история, а не «здравствуйте, мы команда…».** Жюри решает, слушать ли вас, в начале.
+2. **Живое демо важнее слайдов.** Рабочий продукт с оплатой — наш главный козырь. Слайды только подводят к нему.
 3. **Каждая цифра — с источником, и слабые места называем сами.** Честный расчёт с понятным путём выделяет нас среди питчей «на $100M».
 
 ---
 
 ## 1. Подготовка (до 08:30)
 
-- [ ] **Демо-переезд: New York → Austin, DIY truck** — тот, на котором команда сняла цифры. Открыть его в браузере, где он создан (переезды привязаны к браузеру). Вкладки: план с **полоской загрузки грузовика**, объявления, опись Home+.
-- [ ] **Цифры на экране = слайды 5–7**: освобождается **$6,118** (≈ 22 недели аренды); **15 ft вместо 2 × 26 ft**; грузовик загружен на **96%**; продажа до переезда даёт **+$558**; Home+ — **39 вещей, $3,488** стоимости замены. Если на экране другое — говорить цифры с экрана.
-- [ ] ⚠️ Ярлык «Ship-or-Sell DEMO» на Рабочем столе этого ноутбука открывает **другой** переезд (Austin → New York, мувер, $5,872). Для этого питча его **не использовать**.
-- [ ] ⚠️ На главной сайта в примере плана ещё стоят старые **«$850, 10 ft instead of 15 ft»**. Главную на сцене не показывать или попросить команду обновить пример до питча.
+- [ ] **Демо-переезд: New York → Austin, свой грузовик (DIY truck)** — тот, на котором команда сняла цифры. Открыть его в браузере, где он создан: переезды привязаны к браузеру. Вкладки: план с **полоской загрузки грузовика**, объявления, опись Home+.
+- [ ] **Цифры на экране = слайды 5–7**: освобождается **$6 118** (≈ 22 недели аренды); **15 ft вместо 2 × 26 ft**; грузовик загружен на **96%**; продажа до переезда даёт **+$558**; Home+ — **39 вещей на $3 488** стоимости замены. Если на экране другое — говорить цифры с экрана, не со слайда.
+- [ ] ⚠️ Ярлык «Ship-or-Sell DEMO» на Рабочем столе этого ноутбука открывает **другой** переезд (Austin → New York, мувер, $5 872). Для этого питча его **не использовать**.
+- [ ] ⚠️ На главной сайта в примере плана ещё стоят старые **«$850, 10 ft instead of 15 ft»**. Главную на сцене не открывать или обновить пример до питча.
 - [ ] **Запасной вариант**: скриншоты или 30-секундная запись экрана демо на рабочем столе. Упал интернет — переключаемся без извинений.
-- [ ] Тестовая карта Stripe: `4242 4242 4242 4242`, любая будущая дата, любой CVC. В форме Stripe сначала выбрать **Card**. Цена в долларах ($29.00).
-- [ ] Вписать имена команды на слайд 11.
+- [ ] Тестовая карта Stripe: `4242 4242 4242 4242`, любая будущая дата, любой CVC. В форме Stripe сначала выбрать **Card**. Цена показывается в долларах ($29.00).
+- [ ] Вписать имена команды на слайд 11 вместо `[Name]`.
 - [ ] Прогнать питч вслух **3 раза с таймером**. Больше 3:10 — слайд 10 «Competition» одной фразой.
 - [ ] Ноутбук: зарядка, «Не беспокоить», закрыть Telegram и почту, масштаб браузера 125%.
 
 ---
 
-## 2. Script (≈ 3:00)
+## 2. Сценарий (≈ 3:00)
 
-> Stage directions in brackets are not spoken. **Bold** = stress.
+> Ремарки в скобках не произносятся. **Жирное** — интонационный акцент.
 
-### Slide 1 — Cover · 0:00–0:15
-(Walk out. Two-second pause. Look at the room, not the screen.)
+### Слайд 1 — Cover · 0:00–0:15
+(Выходим. Пауза 2 секунды. Смотрим в зал, не в экран.)
 
-“Picture this: you’re moving from New York to Austin. Eighteen hundred miles. A couch, a bed, a dining table, a dresser. **What do you ship, and what do you sell?**
-Today people guess. We’re Ship-or-Sell, and we answer that **in two minutes, from photos**.”
+«Представьте: вы переезжаете из Нью-Йорка в Остин. Тысяча восемьсот миль. У вас диван, кровать, обеденный стол, комод. **Что везти, а что продать?**
+Сегодня это решают на глаз. Мы — Ship-or-Sell, и мы решаем это **за две минуты по фотографии**.»
 
-### Slide 2 — The problem · 0:15–0:40
-“Every year **more than seven million** Americans move to another state. A thousand-mile move costs thousands of dollars.
-And almost half — **forty-seven percent** — say the most stressful part isn’t packing. It’s one question: what to keep, and what to sell.”
+### Слайд 2 — The problem · 0:15–0:40
+«Каждый год **больше семи миллионов** американцев переезжают в другой штат. Переезд на тысячу миль — это тысячи долларов.
+И почти половина людей — **сорок семь процентов** — называют главным стрессом переезда не упаковку, а один вопрос: что оставить, а что продать.»
 
-### Slide 3 — How people decide today · 0:40–0:55
-“What do people use today? Calculators with average prices — they can’t tell solid oak from particleboard. Forums where people have argued ‘ship it or buy there’ for years. Marketplaces — you can sell, but nobody tells you whether you should.
-**Nobody looks at your stuff**, or prices the whole move.”
+### Слайд 3 — How people decide today · 0:40–0:55
+«Сейчас у людей есть калькуляторы со средними ценами, форумы со спорами „везти или купить там“ и маркетплейсы, где продать можно, но никто не скажет, стоит ли.
+**Никто не смотрит на ваши вещи** и не считает переезд целиком.»
 
-### Slide 4 — The solution · 0:55–1:15
-“Here’s how Ship-or-Sell works — this is our live landing page. Snap your rooms. Claude finds every piece: material, size, weight. For each one we compare three prices — **move it, sell it here, buy it again there** — and give a verdict: ship or sell. For anything you sell, we write the Marketplace listing.”
+### Слайд 4 — The solution · 0:55–1:15
+«Ship-or-Sell работает так: вы фотографируете комнаты, Claude находит каждую вещь — материал, размеры, вес. Для каждой мы сравниваем три цены — **перевезти, продать здесь, купить заново там** — и даём вердикт SHIP или SELL. Для продажи сразу пишем объявление.»
 
-### Slide 5 — The insight · 1:15–1:35
-(Slow down. Pause before the second line.)
+### Слайд 5 — The insight · 1:15–1:35
+(Говорим медленнее. Пауза перед второй частью.)
 
-“But the real insight isn’t one couch. **Selling one piece barely saves anything** — you still need the same truck.
-(pause)
-Selling **the right pieces** drops you a whole truck size. In our demo, **two twenty-six-foot trucks become one fifteen-footer, ninety-six percent full**. We never pay for empty air — and the plan is guaranteed in code to **never be worse** than shipping everything.”
+«Но главное — не вердикт по дивану. **Продажа одной вещи почти ничего не экономит**: грузовик тот же.
+(пауза)
+А продажа **правильных вещей** — это грузовик на размер меньше. И в коде гарантировано: план **никогда не хуже**, чем „везти всё“.»
 
-### Slide 6 — Live demo · 1:35–2:15
-(Switch to the browser, the New York → Austin plan.)
+### Слайд 6 — Live demo · 1:35–2:15
+(Переключаемся на браузер, план New York → Austin.)
 
-“Let me show you live. New York to Austin, eighteen hundred miles, a DIY truck.
-Here’s the plan: sell these pieces before the move, and you take **one fifteen-foot truck instead of two twenty-sixes**.” (point at the load bar) “See the load bar — **ninety-six percent full**. No paying for empty air.
-That frees up **six thousand one hundred eighteen dollars** — about twenty-two weeks of rent — and selling before the move puts **five hundred fifty-eight dollars** in your pocket. All of this is **free**: our twenty-nine dollars is less than one percent of it.”
-(Listings tab.) “And here’s the ready Marketplace listing.”
-(Back to slides.)
+«Покажу вживую. Нью-Йорк — Остин, свой грузовик.
+Продаёте эти вещи — и вместо **двух грузовиков по двадцать шесть футов** нужен **один на пятнадцать**.» (показываем на полоску загрузки) «Он загружен на **девяносто шесть процентов** — не платим за пустой воздух.
+Освобождается **шесть тысяч сто восемнадцать долларов** — это около пяти месяцев аренды, и ещё **пятьсот пятьдесят восемь** приносит продажа. Всё это видно **бесплатно**, а наши двадцать девять долларов — меньше процента.»
+(Вкладка объявлений.) «А вот готовое объявление для Marketplace.»
+(Назад к слайдам.)
 
-### Slide 7 — Business model · 2:15–2:28
-“The model is simple. The win is free; the plan is paid: **Move Pass twenty-nine dollars, Pro seventy-nine.** And after the move there’s **Home+**: what you shipped becomes your home inventory for insurance — in the demo, **thirty-nine items, three thousand four hundred eighty-eight dollars** in replacement value. Four ninety-nine a month after a thirty-day trial. That’s why people come back.”
+### Слайд 7 — Business model · 2:15–2:28
+«Выгода бесплатно, план платно: **Move Pass — двадцать девять долларов, Pro — семьдесят девять**. А после переезда — **Home+**: перевезённые вещи становятся описью дома для страховки. В демо это **тридцать девять вещей почти на три с половиной тысячи долларов**. Четыре девяносто девять в месяц — поэтому люди возвращаются.»
 
-### Slide 8 — Market · 2:28–2:42
-“Market: **two point eight million households** move to another state every year — that’s our way in. **One hundred million** is Home+: an insurance inventory that lives on after the move, and every household needs one. In the aggressive case it’s seventy-three percent of year-five revenue.”
+### Слайд 8 — Market · 2:28–2:42
+«**Два и восемь десятых миллиона семей** в год переезжают в другой штат — это наш вход. А **сто миллионов** — это Home+: опись для страховки нужна каждому домохозяйству.»
 
-### Slide 9 — Growth · 2:42–2:52
-“Growth. Google Ads in this niche cost about **six hundred sixty dollars** per paying customer — movers buy those clicks. So we grow through search, like moveBuddha with ninety-one percent organic traffic, and through a signature on every listing we write. With Home+, **LTV to CAC is four point three**.”
+### Слайд 9 — Growth · 2:42–2:52
+«Google-реклама здесь стоит **шестьсот шестьдесят долларов** за клиента — её скупают муверы. Мы растём через поиск, как moveBuddha, и через подпись в каждом нашем объявлении. С Home+ **LTV к CAC — четыре и три**.»
 
-### Slide 10 — Competition · 2:52–2:56
-(If you’re over time, say only this line.)
+### Слайд 10 — Competition · 2:52–2:56
+(Если не укладываемся — только эта фраза.)
 
-“Calculators don’t see your stuff. Yembo sells AI inventories to movers. AptDeco only resells furniture. **We’re the only ones pricing the whole move from photos — for the person moving.**”
+«Калькуляторы не видят ваших вещей, Yembo продаёт AI-опись муверам, AptDeco только перепродаёт мебель. **Мы единственные считаем весь переезд по фото — для самого человека.**»
 
-### Slide 11 — Close · 2:56–3:08
-(Say the last line slowly. Then stop and look at the room.)
+### Слайд 11 — Close · 2:56–3:08
+(Последнюю фразу говорим медленно. Потом молчим и смотрим в зал.)
 
-“At this hackathon we shipped a working product with payments — you just saw it. Next: our first hundred moves, measuring conversion to Pass and Home+.
-**Two point eight million households** a year guess ‘ship or sell.’ **We answer in two minutes.**
-Ship-or-Sell. Thank you.”
+«За хакатон мы запустили работающий продукт с оплатой — вы его только что видели. Дальше — первые сто переездов.
+**Два и восемь десятых миллиона семей** каждый год решают „везти или продать“ наугад. **Мы даём ответ за две минуты.**
+Ship-or-Sell. Спасибо.»
 
 ---
 
 ## 3. Как держаться на сцене
 
-- **Руки видны**, без телефона и ручки. Кликер или один человек у ноутбука.
+- **Руки видны**, без телефона и ручки в руках. Кликер или один человек у ноутбука.
 - **Говорит один основной спикер**, демо ведёт второй, третий отвечает на вопросы по технике и цифрам.
-- **Цифры — медленно**, после каждой ключевой — пауза в полсекунды.
+- **Цифры — медленно.** После каждой ключевой цифры пауза в полсекунды.
 - **Не читать слайды.** На слайде — цифра, голосом — смысл.
-- Что-то сломалось: “While that loads — here’s a recording of the same flow”, и дальше по тексту. Не извиняться дольше одной фразы.
-- На демо обязательно показать **полоску загрузки грузовика** — это новая фишка: “no paying for empty air”.
+- На демо обязательно показать **полоску загрузки грузовика** — это новая фишка: «не платим за пустой воздух».
+- Если что-то сломалось: «Пока грузится — вот запись того же сценария», и дальше по тексту. Не извиняться дольше одной фразы.
 
 ---
 
-## 4. Jury Q&A
+## 4. Ответы на вопросы жюри
 
-Формула ответа: **short answer → a fact or number → bridge to our strength**. 15–25 секунд. Не спорить. Не знаете точно: “Good question — we don’t have that number yet. Here’s how we’ll measure it: …”
+Формула ответа: **короткий ответ → факт или цифра → мост к нашей силе**. 15–25 секунд. Не спорить, не оправдываться. Если не знаете: «Хороший вопрос, точной цифры пока нет. Вот как мы это проверим: …»
 
-**1. How are you better than the moveBuddha or U-Haul calculator?**
-A calculator knows the average price of a move — not **your stuff**. From a photo we see a particleboard couch worth $200 that costs more to ship than to buy again. And we price the whole move, not one item: in our demo, selling the right pieces takes you from two 26-foot trucks to one 15-footer, 96% full, and frees up $6,118. No calculator does that.
+**1. Чем вы лучше калькулятора moveBuddha или U-Haul?**
+Калькулятор знает среднюю цену переезда, но не знает **ваши вещи**. Мы по фото видим, что это диван из ДСП за $200, который везти дороже, чем купить заново. И считаем весь переезд, а не одну вещь: в нашем демо продажа правильных вещей меняет два грузовика по 26 футов на один на 15, загруженный на 96%, и освобождает $6 118. Такого нет ни у одного калькулятора.
 
-**2. Why pay $29 if you can do the math yourself?**
-Because you see the win **before you pay, for free**: in the demo it’s $6,118, and $29 is under 1% of it — the paywall says so. Doing it yourself means hours with a tape measure and a spreadsheet.
+**2. Почему человек заплатит $29, если можно посчитать самому?**
+Потому что выгоду он видит **до оплаты, бесплатно**: в демо это $6 118, и $29 — меньше 1% от этой суммы, экран оплаты показывает это прямо. Посчитать самому — это часы с рулеткой и Excel.
 
-**3. Where does 10% conversion come from?**
-It’s an **upper bound**, not a promise. The hard-paywall median for apps is 10.7%, freemium is 2.1% (RevenueCat 2026). We’re a hybrid: verdicts free, numbers and plan paid. We’ll measure it on our first hundred moves.
+**3. Откуда 10% конверсии в оплату?**
+Это **верхняя граница**, не обещание. Медиана жёсткого пейвола в приложениях — 10,7%, у freemium — 2,1% (RevenueCat 2026). У нас гибрид: вердикты бесплатно, цифры и план платно. Проверим на первых ста переездах.
 
-**4. Where is $100M? Is it real?**
-Honestly: one-time Pass and Pro payments give about **$17M** in year five — a good, profitable business, but not $100M. **Home+** gets you there: in the aggressive case, 1.27M subscribers — about 1% of US households — is $76M, plus Pass/Pro $17M and store commissions $11M (3% on replacement furniture people buy through a link). Without commissions it’s $94M. We name the key assumption ourselves: Home+ has to reach beyond people who are moving — everyone needs an insurance inventory. The model is in `docs/metrics.md`.
+**4. Где $100M? Это реально?**
+Честно: на разовых платежах Pass и Pro — около **$17M** на пятый год. Это хороший прибыльный бизнес, но не $100M. $100M даёт **Home+**: в агрессивном сценарии 1,27 млн подписчиков (≈ 1% домохозяйств США) — это $76M, плюс Pass/Pro $17M и комиссии магазинов $11M (3% с мебели на замену, которую человек сам покупает по ссылке). Без комиссий — больше $90M. Главное допущение называем сами: Home+ должен выйти за пределы переезжающих, опись для страховки нужна всем. Расчёт — в `docs/metrics.md`.
 
-**5. Why not Google Ads? How will you get users?**
-A click in this niche costs $5–10, and movers with thousand-dollar tickets buy them. For us that’s **$660 per paying customer** — it doesn’t pay back. We grow where moveBuddha grows: SEO pages like “should I move my couch from X to Y” (91% of their traffic is search) and a “Priced with Ship-or-Sell” signature on every listing the product writes.
+**5. Почему не Google Ads? Как получите пользователей?**
+Клик в нише стоит $5–10, его покупают муверы с чеком в тысячи долларов. Для нас это **$660 за платящего клиента** — не окупается. Растём там, где растёт moveBuddha: SEO-страницы «стоит ли везти диван из X в Y» (91% их трафика — поиск) и подпись «Priced with Ship-or-Sell» в каждом объявлении, которое уже пишет продукт.
 
-**6. How accurate is the AI? What if it gets the size wrong?**
-The AI gives an estimate and a **confidence** for every item. The user sees everything, can fix any field or add an item, and the plan recalculates instantly. We don’t need inch-level precision: a verdict only flips when the difference is tens of dollars.
+**6. Насколько точен AI? А если ошибся в размерах?**
+AI даёт оценку и **уверенность** по каждой вещи. Пользователь видит всё, может поправить любое поле или добавить вещь вручную, и план сразу пересчитывается. Точность до дюйма не нужна: вердикт меняется, только когда разница в десятки долларов.
 
-**7. Where do moving and resale prices come from?**
-Rates come from public 2025–2026 price lists: interstate movers, PODS-style containers, one-way truck rental. Resale is a share of the new price by material and brand: particleboard keeps about 12%, solid wood about 40%. It’s all in the code and docs, and gets refined with real sales.
+**7. Откуда цены перевозки и перепродажи?**
+Ставки — из открытых прайсов 2025–2026: межштатный мувер, контейнер типа PODS, аренда грузовика в одну сторону. Перепродажа — доля от цены новой вещи по материалу и бренду: ДСП держит около 12%, массив — около 40%. Всё это в коде и документации и будет уточняться на реальных продажах.
 
-**8. What stops Facebook, U-Haul or Updater from doing this?**
-U-Haul makes money on the **bigger** truck — telling you to sell and rent a smaller one isn’t in its interest. Facebook is a marketplace, not a moving advisor. Updater does checklists and services, not item analysis. We’re on the mover’s side, and that’s our main asset. And we’re already live.
+**8. Что мешает Facebook, U-Haul или Updater сделать то же самое?**
+U-Haul зарабатывает на **большом** грузовике — ему невыгодно советовать продать вещи и взять меньший. Facebook — площадка, а не советник по переезду. Updater — это чек-листы и сервисы, а не анализ вещей. Мы на стороне человека, и это главный актив. К тому же мы уже работаем.
 
-**9. It’s a one-time purchase. Where’s retention?**
-Yes, moving is rare, and we don’t hide it. Retention is **Home+**: after the move, your item list becomes a home inventory for insurance, which the NAIC recommends keeping. It’s already a subscription in the product: **30 days free, then $4.99 a month**. In the demo the inventory is 39 items worth $3,488, ready for an insurer.
+**9. Это разовая покупка. Где удержание?**
+Да, переезд — редкое событие, и мы это не скрываем. Удержание даёт **Home+**: после переезда список вещей становится описью дома для страховки, которую рекомендует вести регулятор NAIC. Это уже подписка в продукте: **30 дней бесплатно, потом $4,99 в месяц**. В демо опись — 39 вещей на $3 488, готовая для страховой.
 
-**10. Photos of my home — what about privacy?**
-Only **the image** goes to the AI: no name, email, ZIP or address. EXIF and GPS are stripped on upload. Photos live in a private bucket, links expire in 10 minutes, and every table has Row Level Security. (Appendix slide “Security and trust”.)
+**10. Фото квартиры — а приватность?**
+В AI уходит **только изображение**: без имени, email, ZIP и адреса. EXIF и GPS вырезаются при загрузке. Фото лежат в закрытом хранилище, ссылки живут 10 минут, на всех таблицах Row Level Security. (Запасной слайд «Security and trust».)
 
-**11. Can someone bypass the paywall?**
-No. Locked numbers **never reach the browser** — the server sends zeros. Only the Stripe webhook can mark a move paid, and a database trigger enforces that. We tested it.
+**11. Можно ли обойти оплату?**
+Нет. Закрытые цифры **не уходят в браузер** — сервер отдаёт нули. Статус «оплачено» может поставить только webhook Stripe, это защищено триггером в базе. Мы это проверяли.
 
-**12. What does the AI cost, and does it scale?**
-About **$0.45 per move** (Claude Sonnet 5.5, ~10 photos plus listings). That’s across all users, free ones included, and gross margin is still around 80%. There are abuse limits: 20 photos per move and a daily cap on AI calls.
+**12. Сколько стоит AI и как это масштабируется?**
+Около **$0,45 на переезд** (Claude Sonnet 5.5, ~10 фото и объявления). Это на всех пользователей, включая бесплатных, и маржа всё равно около 80%. Есть защита от злоупотреблений: до 20 фото на переезд и дневной лимит вызовов AI.
 
-**13. Why the US?**
-It’s the biggest, most expensive interstate moving market — about 7 million people a year (Census ACS) — with a strong habit of selling furniture on Marketplace. The model carries over to any country with long-distance moves and a used-furniture market.
+**13. Почему США?**
+Это самый большой и самый дорогой рынок межштатных переездов: больше 7 млн человек в год (Census ACS), и сильная привычка продавать мебель на Marketplace. Модель переносится в любую страну, где есть дальние переезды и рынок б/у мебели.
 
-**14. Do you have users or validation?**
-No paying users yet — we launched at this hackathon. Demand shows in the data: forums have run “ship it or buy there” threads for years with no real answer. Next step: our first 100 moves and measured conversion.
+**14. Есть ли пользователи или валидация?**
+Платящих пользователей пока нет — продукт запущен на этом хакатоне. Спрос виден в данных: на форумах годами идут треды «везти или купить там», и нормального ответа на них нет. Следующий шаг — первые 100 переездов и замер конверсии.
 
-**15. What exactly did you build during the hackathon?**
-The whole product: Claude recognition, per-item pricing, the Move Money Plan with the truck load bar, listings, Stripe payments, Pass and Pro, the Home+ subscription, data protection and 43 automated tests. It’s all live — what you saw in the demo.
+**15. Что сделали именно за хакатон?**
+Весь продукт: распознавание Claude, расчёт по каждой вещи, Move Money Plan с полоской загрузки грузовика, объявления, оплата Stripe, тарифы Pass и Pro, подписка Home+, защита данных и 43 автотеста. Всё работает на проде — то, что вы видели в демо.
 
-**16. What will you do with the prize and support?**
-Our first 100 moves: measure conversion to Pass and Pro, and how many people stay on Home+ after the trial. Those are the two hypotheses the path to $100M rests on.
+**16. Что сделаете с призом и поддержкой?**
+Первые 100 переездов: меряем конверсию в Pass и Pro и сколько людей остаются на Home+ после пробного периода. Это две главные гипотезы, на которых держится путь к $100M.
 
 ---
 
 ## 5. Если остаётся время — козыри
 
-- “Want to try it? Open ship-or-sell.vercel.app on your phone and snap a chair in this room.” (Только если демо стабильно работало на прогоне.)
-- Запасные слайды 12–14 (security, unit economics, sources) открываем по вопросу, не в основном питче.
+- «Хотите попробовать сами? Откройте ship-or-sell.vercel.app с телефона и сфотографируйте стул в этом зале.» (Только если демо стабильно работало на прогоне.)
+- Запасные слайды 12–14 (Security and trust, Unit economics, Sources) открываем по вопросу, а не в основном питче.
