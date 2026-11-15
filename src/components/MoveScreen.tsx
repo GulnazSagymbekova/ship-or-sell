@@ -134,7 +134,7 @@ export function MoveScreen() {
           <h2 className="text-sm font-medium text-muted-foreground">
             {itemCount} item{itemCount === 1 ? "" : "s"} · {photoCount} photo{photoCount === 1 ? "" : "s"}
           </h2>
-          <div className="grid items-start gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
             {sections.map((s) => (
               <PhotoSection
                 key={s.key}
