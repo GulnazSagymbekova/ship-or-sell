@@ -33,16 +33,21 @@ type FormValues = z.infer<typeof schema>;
 const toIsoDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
+/** Days needed to list and sell before the move — the plan's "sell by" dates need room. */
+const MIN_DAYS_AHEAD = 3;
+
 /**
- * Past days and anything over 2 years ahead are disabled (the API rejects them too).
+ * Days before today + MIN_DAYS_AHEAD and anything over 2 years ahead are disabled.
  * Evaluated lazily (only when the calendar opens), so it's prerender-safe.
  */
 function isPast(d: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const earliest = new Date(today);
+  earliest.setDate(earliest.getDate() + MIN_DAYS_AHEAD);
   const latest = new Date(today);
   latest.setFullYear(latest.getFullYear() + 2);
-  return d < today || d > latest;
+  return d < earliest || d > latest;
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -141,7 +146,11 @@ export function MoveForm() {
             </Popover>
           )}
         />
-        <FieldError message={errors.moveDate?.message} />
+        {errors.moveDate ? (
+          <FieldError message={errors.moveDate.message} />
+        ) : (
+          <p className="text-xs text-muted-foreground">At least {MIN_DAYS_AHEAD} days out, so you have time to sell.</p>
+        )}
       </div>
 
       <fieldset className="space-y-2">

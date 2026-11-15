@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AlertTriangle, Heart, Pencil, Trash2 } from "lucide-react";
 import type { Item } from "@/types";
 import { CATEGORY_LABEL } from "@/client/labels";
@@ -19,13 +19,9 @@ export function ItemCard({
   onDelete: () => void;
   onToggleSentimental: () => void;
 }) {
-  // Delete in two taps: the first one turns the bin into a red "Delete" button for a few seconds.
+  // Delete in two taps: the first one turns the bin into a red "Delete" button. It stays until
+  // you tap it or tap anywhere else (no timer: in testing it vanished before people could tap).
   const [confirming, setConfirming] = useState(false);
-  useEffect(() => {
-    if (!confirming) return;
-    const t = setTimeout(() => setConfirming(false), 4000);
-    return () => clearTimeout(t);
-  }, [confirming]);
 
   return (
     <div className="flex items-center gap-1 rounded-lg border bg-card p-3 pr-1">
@@ -64,6 +60,7 @@ export function ItemCard({
             setConfirming(false);
             onDelete();
           }}
+          onBlur={() => setConfirming(false)}
           aria-label={`Confirm delete ${item.name}`}
           className="shrink-0"
           autoFocus

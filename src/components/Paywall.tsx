@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Loader2, Lock, Sparkles } from "lucide-react";
 import type { CheckoutPlan, MoveSummary } from "@/types";
 import { api } from "@/lib/api-client";
@@ -98,6 +98,14 @@ const PRO_FEATURES = [
 function useCheckout(moveId: string) {
   const [busy, setBusy] = useState<CheckoutPlan | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // «Назад» из Stripe: браузер достаёт страницу из bfcache вместе со спиннером — сбрасываем.
+  useEffect(() => {
+    const reset = (e: PageTransitionEvent) => {
+      if (e.persisted) setBusy(null);
+    };
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
   const start = async (plan: CheckoutPlan) => {
     setBusy(plan);
     setError(null);

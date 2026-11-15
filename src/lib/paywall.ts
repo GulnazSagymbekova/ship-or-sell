@@ -32,6 +32,24 @@ export function computeSummary(estimates: Estimate[], items: Pick<Item, "id" | "
 }
 
 /**
+ * Сводка из плана (v2), чтобы API и экран не противоречили друг другу.
+ * computeSummary складывает долю каждой вещи в перевозке, а план считает реальный
+ * грузовик/контейнер целиком — цифры расходились ($358 против $831 в тесте).
+ * Когда план есть, источник правды — он: «перевезти всё» = plan.shipAllCost,
+ * экономия = plan.freedCash, вещей на продажу = всё, что план не везёт.
+ */
+export function summaryFromPlan(plan: MovePlan): MoveSummary {
+  const sellCount = plan.items.filter((i) => i.action !== "ship").length;
+  const totalSavings = Math.max(0, Math.round(plan.freedCash));
+  return {
+    sellCount: totalSavings > 0 ? sellCount : 0,
+    totalSavings,
+    shipAllCost: Math.round(plan.shipAllCost),
+    optimalCost: Math.round(plan.shipCost),
+  };
+}
+
+/**
  * Скрытие цифр на сервере. Если move не оплачен: 3 вещи с наибольшим savings — как есть,
  * у остальных shipCost/resaleLow/resaleHigh/replaceCost/savings = 0; verdict и confidence
  * остаются. summary — всегда по полным цифрам.

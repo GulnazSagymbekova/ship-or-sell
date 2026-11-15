@@ -3,7 +3,7 @@ import type { MoveDetails } from "@/types";
 import { apiError, isUuid, logError, notFound, requireUser } from "@/lib/http";
 import { ITEM_COLUMNS, MOVE_COLUMNS, toItem, toMove } from "@/lib/db/mappers";
 import { loadEstimates, loadListings } from "@/lib/db/estimates";
-import { applyPaywall, applyPlanPaywall } from "@/lib/paywall";
+import { applyPaywall, applyPlanPaywall, summaryFromPlan } from "@/lib/paywall";
 import { planMove } from "@/lib/pricing/plan";
 import { getSignedPhotoUrls, PHOTO_BUCKET } from "@/lib/storage";
 import { tierFromPayments } from "@/lib/tier";
@@ -61,13 +61,8 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
     const paywalled =
       fullEstimates.length > 0 ? applyPaywall(move, fullEstimates, items) : null;
     // v2: план по полным цифрам, скрытие — applyPlanPaywall. null, пока оценок нет.
-    const plan = paywalled
-      ? applyPlanPaywall(
-          planMove(move, items, fullEstimates, new Date().toISOString().slice(0, 10)),
-          paywalled.lockedItemIds,
-          move.status === "paid",
-        )
-      : null;
+    const fullPlan = paywalled ? planMove(move, items, fullEstimates, new Date().toISOString().slice(0, 10)) : null;
+    const plan = paywalled && fullPlan ? applyPlanPaywall(fullPlan, paywalled.lockedItemIds, move.status === "paid") : null;
 
     const body: MoveDetails = {
       move,
@@ -77,7 +72,8 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
       photoUrls,
       estimates: paywalled?.estimates ?? [],
       lockedItemIds: paywalled?.lockedItemIds ?? [],
-      summary: paywalled?.summary ?? null,
+      // Сводка из полного плана, чтобы совпадала с планом на экране.
+      summary: fullPlan ? summaryFromPlan(fullPlan) : (paywalled?.summary ?? null),
       listings,
       plan,
       tier,

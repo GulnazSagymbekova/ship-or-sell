@@ -4,7 +4,7 @@ import type { Estimate, EstimateResult, Item } from "@/types";
 import { apiError, isUuid, logError, notFound, parseJson, requireUser } from "@/lib/http";
 import { getOwnedMove } from "@/lib/db/access";
 import { estimateToRow, ITEM_COLUMNS, toItem } from "@/lib/db/mappers";
-import { applyPaywall, applyPlanPaywall } from "@/lib/paywall";
+import { applyPaywall, applyPlanPaywall, summaryFromPlan } from "@/lib/paywall";
 import { estimateMove } from "@/lib/pricing";
 import { planMove } from "@/lib/pricing/plan";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -85,6 +85,8 @@ export async function POST(req: Request) {
     const plan = planMove(move, items, estimates, today);
     const result: EstimateResult = {
       ...paywalled,
+      // Сводка — из ПОЛНОГО плана (до скрытия), как и раньше «всегда полная».
+      summary: summaryFromPlan(plan),
       plan: applyPlanPaywall(plan, paywalled.lockedItemIds, move.status === "paid"),
     };
     return NextResponse.json(result);
